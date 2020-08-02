@@ -113,10 +113,10 @@ namespace VidyaSadhan_API.Services
             user.VerificationToken = RandomTokenGen();
             _identityContext.Users.Update(user);
             await _identityContext.SaveChangesAsync();
-            string url = _configsetting.WebUrl + "/verifyemail";
-            var param = new Dictionary<string, string>() { { "userid", user.Id },{ "token", user.VerificationToken } };
+            string url = _configsetting.WebUrl + "/verifyemail" + "/" + user.Id + "/" + user.VerificationToken;
+            //var param = new Dictionary<string, string>() { { "userid", user.Id },{ "token", user.VerificationToken } };
 
-            var newUrl = new Uri(QueryHelpers.AddQueryString(url, param));
+            //var newUrl = new Uri(QueryHelpers.AddQueryString(url, param));
 
             var message = new EmailMessage(new string[] { user.Email }, "Confirmation email link", url);
             await _emailSender.SendEmailAsync(message);
