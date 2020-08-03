@@ -63,7 +63,10 @@ namespace VidyaSadhan_API.Services
 
             if (IsUserExist != null)
             {
-                throw new VSException("Email already registered with:" + register.Email);
+                var exception = new VSException("Email already registered with:" + register.Email);
+                exception.Value = "Looks like Email is already registered with" + register.Email;
+                throw exception;
+
             }
 
             var User = new Account
