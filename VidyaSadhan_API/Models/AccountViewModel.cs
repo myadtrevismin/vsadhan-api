@@ -11,6 +11,7 @@ namespace VidyaSadhan_API.Models
         public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public UserRoles Role { get; set; }
 
         [JsonIgnore]
         public string Password { get; set; }

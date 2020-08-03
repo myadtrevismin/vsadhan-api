@@ -72,7 +72,8 @@ namespace VidyaSadhan_API.Services
                 Email = register.Email,
                 FirstName = register.FirstName,
                 LastName = register.LastName,
-                PhoneNumber = register.Phone
+                PhoneNumber = register.Phone,
+                Role = register.Role
             };
 
             IdentityResult results = null;
@@ -160,10 +161,18 @@ namespace VidyaSadhan_API.Services
             try
             {
                 var userexists = await _userManager.FindByEmailAsync(login.Email);
+                 
                 if (userexists == null)
                 {
                     var exception = new VSException("Looks like Email is not registered");
                     exception.Value = "Looks like Email is not registered";
+                    throw exception;
+                }
+
+                if(userexists.Role != login.Role)
+                {
+                    var exception = new VSException("Looks like Email is not registered as intended type");
+                    exception.Value = "Looks like Email is not registered as intended type";
                     throw exception;
                 }
 

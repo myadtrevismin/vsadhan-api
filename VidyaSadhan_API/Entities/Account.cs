@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using VidyaSadhan_API.Models;
 
 namespace VidyaSadhan_API.Entities
 {
@@ -29,6 +30,8 @@ namespace VidyaSadhan_API.Entities
         public DateTime EnrollmentDate { get; set; }
 
         public string VerificationToken { get; set; }
+
+        public UserRoles Role { get; set; }
 
         public ICollection<Instructor> Instructors { get; set; }
 

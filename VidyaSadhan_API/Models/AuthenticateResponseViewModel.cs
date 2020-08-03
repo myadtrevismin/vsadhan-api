@@ -14,6 +14,7 @@ namespace VidyaSadhan_API.Models
         public string Email { get; set; }
         public string Username { get; set; }
         public string JwtToken { get; set; }
+        public UserRoles Role { get; set; }
 
         //[JsonIgnore] 
         public string RefreshToken { get; set; }
@@ -27,6 +28,7 @@ namespace VidyaSadhan_API.Models
             JwtToken = jwtToken;
             RefreshToken = refreshToken;
             Email = user.Email;
+            Role = user.Role;
         }
     }
 }
