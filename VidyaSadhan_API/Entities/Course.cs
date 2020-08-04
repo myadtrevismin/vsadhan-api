@@ -18,6 +18,10 @@ namespace VidyaSadhan_API.Entities
 
         public string CourseDescription { get; set; }
 
+        public DateTime StartDate { get; set; }
+
+        public DateTime EndDate { get; set; }
+
         [Range(0, 5)]
         public int Credits { get; set; }
 

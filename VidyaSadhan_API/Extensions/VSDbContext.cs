@@ -63,6 +63,8 @@ namespace VidyaSadhan_API.Extensions
             modelBuilder.Entity<Question>().HasKey(c => c.QuestionId);
             modelBuilder.Entity<Student>().HasKey(c => c.UserId);
             modelBuilder.Entity<Instructor>().HasKey(c => c.UserId);
+            modelBuilder.Entity<CourseSubject>()
+                .HasKey(c => new { c.CourseID, c.SubjectId });
         }
 
         public DbSet<Course> Courses { get; set; }
@@ -78,6 +80,13 @@ namespace VidyaSadhan_API.Extensions
         public DbSet<Questionnaire> Questionnaires { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<RefreshTokenSet> RefreshTokenSets { get; set; }
+        public DbSet<Board> Boards { get; set; }
+        public DbSet<Medium> Mediums { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<AcademicType> AcademicTypes { get; set; }
+        public DbSet<CourseSubject> CourseSubjects { get; set; }
+        public DbSet<Demo> Demos { get; set; }
 
     }
 }

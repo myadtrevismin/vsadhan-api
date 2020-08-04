@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace VidyaSadhan_API.Entities
 {
-    public class Demo: Course
+    public class AcademicType
     {
+        [Key]
+        public int AcademyTypeId { get; set; }
+        public string Academy { get; set; }
     }
 }
