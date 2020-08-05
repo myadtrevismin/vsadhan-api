@@ -26,6 +26,8 @@ namespace VidyaSadhan_API.Controllers
             _subjectService = subjectService;
         }
 
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -43,7 +45,6 @@ namespace VidyaSadhan_API.Controllers
         /// 
         /// </summary>
         /// <param name="value"></param>
-        [AllowAnonymous]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Post([FromBody] SubjectViewModel subject)
@@ -64,7 +65,6 @@ namespace VidyaSadhan_API.Controllers
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpPut]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
@@ -86,7 +86,6 @@ namespace VidyaSadhan_API.Controllers
         /// </summary>
         /// <param name="subject"></param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpDelete]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
