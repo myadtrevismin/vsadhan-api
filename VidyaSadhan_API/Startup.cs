@@ -158,6 +158,7 @@ namespace VidyaSadhan_API
             services.AddTransient<InstructorService>();
             services.AddTransient<StudentService>();
             services.AddTransient<AddressService>();
+            services.AddTransient<SubjectService>();
             services.AddScoped<ICalendarService, CalenderService>();
             services.AddScoped<StaticService>();
             services.AddSwaggerDocument();
