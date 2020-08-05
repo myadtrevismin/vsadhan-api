@@ -47,11 +47,11 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        public async Task<int> SaveDemo(DemoViewModel Demo)
+        public async Task<int> SaveDemo(DemoViewModel demo)
         {
             try
             {
-                _dbContext.Demos.Add(_map.Map<Demo>(Demo));
+                _dbContext.Demos.Add(_map.Map<Demo>(demo));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception)
@@ -62,11 +62,11 @@ namespace VidyaSadhan_API.Services
 
 
 
-        public async Task<int> UpdateDemo(DemoViewModel Demo)
+        public async Task<int> UpdateDemo(DemoViewModel demo)
         {
             try
             {
-                _dbContext.Demos.Update(_map.Map<Demo>(Demo));
+                _dbContext.Demos.Update(_map.Map<Demo>(demo));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception)
@@ -75,11 +75,11 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        public async Task<int> DeleteDemo(DemoViewModel Demo)
+        public async Task<int> DeleteDemo(DemoViewModel demo)
         {
             try
             {
-                _dbContext.Demos.Remove(_map.Map<Demo>(Demo));
+                _dbContext.Demos.Remove(_map.Map<Demo>(demo));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception)
