@@ -13,19 +13,20 @@ using VidyaSadhan_API.Services;
 
 namespace VidyaSadhan_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/demos")]
     [ApiController]
     public class DemoController : ControllerBase
     {
-        private readonly ILogger<AddressController> _logger;
+        private readonly ILogger<DemoController> _logger;
         private readonly DemoService _DemoService;
 
-        public DemoController(ILogger<AddressController> logger, DemoService DemoService)
+        public DemoController(ILogger<DemoController> logger, DemoService DemoService)
         {
             _logger = logger;
             _DemoService = DemoService;
         }
 
+        [HttpGet]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Get()
@@ -41,6 +42,7 @@ namespace VidyaSadhan_API.Controllers
             }
         }
 
+        [HttpGet]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Get(int id)
@@ -60,6 +62,7 @@ namespace VidyaSadhan_API.Controllers
         /// 
         /// </summary>
         /// <param name="value"></param>
+        [HttpPost]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Post([FromBody] DemoViewModel demo)
