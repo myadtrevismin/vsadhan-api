@@ -13,19 +13,20 @@ using VidyaSadhan_API.Services;
 
 namespace VidyaSadhan_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/subjects")]
     [ApiController]
     public class SubjectController : ControllerBase
     {
-        private readonly ILogger<AddressController> _logger;
+        private readonly ILogger<SubjectController> _logger;
         private readonly SubjectService _subjectService;
 
-        public SubjectController(ILogger<AddressController> logger, SubjectService subjectService)
+        public SubjectController(ILogger<SubjectController> logger, SubjectService subjectService)
         {
             _logger = logger;
             _subjectService = subjectService;
         }
 
+        [HttpGet]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Get(int id)
@@ -41,6 +42,7 @@ namespace VidyaSadhan_API.Controllers
             }
         }
 
+        [HttpPost]
         /// <summary>
         /// 
         /// </summary>
