@@ -38,7 +38,7 @@ namespace VidyaSadhan_API.Services
         {
             try
             {
-                var result = await _dbContext.Demos.FirstOrDefaultAsync().ConfigureAwait(false);
+                var result = await _dbContext.Demos.FirstOrDefaultAsync(x => x.CourseId == demoId).ConfigureAwait(false);
                 return _map.Map<DemoViewModel>(result);
             }
             catch (Exception)
