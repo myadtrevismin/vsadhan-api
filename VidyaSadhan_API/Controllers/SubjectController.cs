@@ -25,11 +25,6 @@ namespace VidyaSadhan_API.Controllers
             _logger = logger;
             _subjectService = subjectService;
         }
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
         public async Task<IActionResult> Get(int id)
         {
@@ -39,7 +34,7 @@ namespace VidyaSadhan_API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured in Subject", null);
+                _logger.LogError(ex, "Error Occured in get Subject", null);
                 throw;
             }
         }
@@ -51,20 +46,61 @@ namespace VidyaSadhan_API.Controllers
         [AllowAnonymous]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] SubjectViewModel subject)
         {
+            try
+            {
+                return Ok(await _subjectService.SaveSubject(subject).ConfigureAwait(false));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in save subject", null);
+                throw;
+            }
         }
 
-        // PUT api/<SubjectController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPut]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> Put(SubjectViewModel subject)
         {
+            try
+            {
+                return Ok(await _subjectService.UpdateSubject(subject).ConfigureAwait(false));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in users", null);
+                throw;
+            }
         }
 
-        // DELETE api/<SubjectController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpDelete]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> Delete(SubjectViewModel subject)
         {
+            try
+            {
+                return Ok(await _subjectService.DeleteSubject(subject).ConfigureAwait(false));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in users", null);
+                throw;
+            }
         }
     }
 }

@@ -33,5 +33,44 @@ namespace VidyaSadhan_API.Services
                 throw;
             }
         }
+
+        public async Task<int> SaveSubject(SubjectViewModel subject)
+        {
+            try
+            {
+                _dbContext.Subjects.Add(_map.Map<Subject>(subject));
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> UpdateSubject(SubjectViewModel subject)
+        {
+            try
+            {
+                _dbContext.Subjects.Update(_map.Map<Subject>(subject));
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> DeleteSubject(SubjectViewModel subject)
+        {
+            try
+            {
+                _dbContext.Subjects.Remove(_map.Map<Subject>(subject));
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
