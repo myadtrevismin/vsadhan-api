@@ -11,13 +11,17 @@ namespace VidyaSadhan_API.Models
         public VCourse VCourse { get; set; }
         public IEnumerable<VTeacher> VTeachers { get; set; }
 
-        public int CourseId { get; set; }
+        public string CourseId { get; set; }
         public string Title { get; set; }
 
         public int Credits { get; set; }
 
-        public int DepartmentID { get; set; }
+        public int? DepartmentID { get; set; }
         public string AdminId { get; set; }
+
+        public string ExternalCourseId { get; set; }
+
+        public CalendarEvent CalendarEvent { get; set; }
 
         public DepartmentViewModel Department { get; set; }
         public ICollection<EnrolementViewModel> Enrollments { get; set; }

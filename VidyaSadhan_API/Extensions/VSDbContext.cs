@@ -55,7 +55,7 @@ namespace VidyaSadhan_API.Extensions
             modelBuilder.Entity<Question>().ToTable("Question");
 
             modelBuilder.Entity<CourseAssignment>()
-                .HasKey(c => new { c.CourseID, c.InstructorID });
+                .HasKey(c => new { c.CourseId, c.InstructorId });
             modelBuilder.Entity<AddressType>().HasKey(c => c.TypeId);
             modelBuilder.Entity<State>().HasKey(c => c.StateCd);
             modelBuilder.Entity<Country>().HasKey(c => c.CountryCd);
@@ -63,6 +63,7 @@ namespace VidyaSadhan_API.Extensions
             modelBuilder.Entity<Question>().HasKey(c => c.QuestionId);
             modelBuilder.Entity<Student>().HasKey(c => c.UserId);
             modelBuilder.Entity<Instructor>().HasKey(c => c.UserId);
+            modelBuilder.Entity<Enrollment>().HasKey(c => c.EnrollementId);
             modelBuilder.Entity<CourseSubject>()
                 .HasKey(c => new { c.CourseID, c.SubjectId });
         }

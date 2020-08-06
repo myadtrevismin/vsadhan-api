@@ -43,6 +43,7 @@ namespace VidyaSadhan_API.Controllers
         }
 
         [HttpGet]
+        [Route("GetById")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Get(int id)
@@ -63,6 +64,7 @@ namespace VidyaSadhan_API.Controllers
         /// </summary>
         /// <param name="value"></param>
         [HttpPost]
+        [Route("create")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Post([FromBody] DemoViewModel demo)
@@ -84,6 +86,7 @@ namespace VidyaSadhan_API.Controllers
         /// <param name="address"></param>
         /// <returns></returns>
         [HttpPut]
+        [Route("update")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Put(DemoViewModel demo)
@@ -105,6 +108,7 @@ namespace VidyaSadhan_API.Controllers
         /// <param name="Demo"></param>
         /// <returns></returns>
         [HttpDelete]
+        [Route("delete")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Delete(DemoViewModel demo)
