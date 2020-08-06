@@ -25,7 +25,9 @@ namespace VidyaSadhan_API.Entities
         [Range(0, 5)]
         public int Credits { get; set; }
 
-        public int DepartmentID { get; set; }
+        public string ExternalCourseId { get; set; }
+
+        public int? DepartmentID { get; set; }
 
         public Department Department { get; set; }
         public ICollection<Enrollment> Enrollments { get; set; }

@@ -57,7 +57,7 @@ namespace VS_GAPI.Services
                     Description = cEvent.Description,
                     Start = new EventDateTime() { DateTime = cEvent.Start, TimeZone = "Asia/Calcutta" },
                     End = new EventDateTime() { DateTime = cEvent.End, TimeZone = "Asia/Calcutta" },
-                    Recurrence = cEvent.Recurrence.Select(item => "RRULE:FREQ=" + item.Frequency + ";COUNT=" + item.Count + "").ToList(),
+                    Recurrence = cEvent.Recurrence?.Select(item => "RRULE:FREQ=" + item.Frequency + ";COUNT=" + item.Count + "").ToList(),
                     Attendees = cEvent.Attendees.Select(x => new EventAttendee { Email = x, }).ToList(),
                     Reminders = new Event.RemindersData() { UseDefault = false, Overrides = new List<EventReminder> { new EventReminder { Method = "email", Minutes = 24 * 60 } } },
                     Organizer = new Event.OrganizerData() { Email = cEvent.Organizer, DisplayName = "Admin" },
