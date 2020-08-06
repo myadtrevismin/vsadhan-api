@@ -18,6 +18,7 @@ namespace VidyaSadhan_API.Helpers.Mappers
             //CreateMap<UserViewModel,Account>().ReverseMap();
             CreateMap<AccountViewModel, Account>().ReverseMap();
             CreateMap<SubjectViewModel, Subject>().ReverseMap();
+            CreateMap<QuestionViewModel, Question>().ReverseMap();
             CreateMap<DemoViewModel, Demo>().ReverseMap();
             CreateMap<VCourse, Google.Apis.Classroom.v1.Data.Course>().ReverseMap();
             CreateMap<VTeacher, Teacher>().ReverseMap();
