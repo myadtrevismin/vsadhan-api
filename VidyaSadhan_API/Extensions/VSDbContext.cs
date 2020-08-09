@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MimeKit.Encodings;
+using Namotion.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ using VidyaSadhan_API.Entities;
 
 namespace VidyaSadhan_API.Extensions
 {
-    public class VSDbContext:IdentityDbContext<Account>
+    public class VSDbContext : IdentityDbContext<Account>
     {
         public VSDbContext(DbContextOptions options) : base(options)
         {
@@ -56,6 +58,7 @@ namespace VidyaSadhan_API.Extensions
 
             modelBuilder.Entity<CourseAssignment>()
                 .HasKey(c => new { c.CourseId, c.InstructorId });
+            modelBuilder.Entity<CourseAssignment>().HasOne(x => x.Instructor).WithMany(y => y.CourseAssignments).HasForeignKey(z => z.InstructorId);
             modelBuilder.Entity<AddressType>().HasKey(c => c.TypeId);
             modelBuilder.Entity<State>().HasKey(c => c.StateCd);
             modelBuilder.Entity<Country>().HasKey(c => c.CountryCd);
@@ -65,7 +68,7 @@ namespace VidyaSadhan_API.Extensions
             modelBuilder.Entity<Instructor>().HasKey(c => c.UserId);
             modelBuilder.Entity<Enrollment>().HasKey(c => c.EnrollementId);
             modelBuilder.Entity<CourseSubject>()
-                .HasKey(c => new { c.CourseID, c.SubjectId });
+               .HasKey(c => new { c.CourseId, c.SubjectId });
         }
 
         public DbSet<Course> Courses { get; set; }

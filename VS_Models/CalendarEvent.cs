@@ -16,6 +16,7 @@ namespace VS_Models
         public IEnumerable<string> Attendees { get; set; }
         public string Organizer { get; set; }
         public string UserEmail { get; set; }
+        public string VideoLink { get; set; }
     }
 
     public class Recurrence

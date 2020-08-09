@@ -6,14 +6,14 @@ namespace VidyaSadhan_API.Entities
 {
     public class Enrollment
     {
+        [Key]
         public int EnrollementId { get; set; }
-        public int CourseID { get; set; }
+        public string CourseId { get; set; }
+        public Course Course { get; set; }
         public string StudentID { get; set; }
         [DisplayFormat(NullDisplayText = "No grade")]
         public Grade? Grade { get; set; }
 
-        [ForeignKey("CourseID")]
-        public Course Course { get; set; }
 
         [ForeignKey("StudentID")]
         public Account Student { get; set; }

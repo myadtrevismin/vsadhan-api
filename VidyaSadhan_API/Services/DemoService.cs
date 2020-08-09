@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Google.Apis.Calendar.v3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
@@ -19,14 +20,16 @@ namespace VidyaSadhan_API.Services
         private VSDbContext _dbContext;
         private ICalendarService _calendarService;
         private readonly ConfigSettings _configsetting;
+        private readonly UserService _userService;
         IMapper _map;
 
-        public DemoService(VSDbContext dbContext,ICalendarService calendarService,
-            IOptionsMonitor<ConfigSettings> optionsMonitor,IMapper map)
+        public DemoService(VSDbContext dbContext, ICalendarService calendarService,
+            IOptionsMonitor<ConfigSettings> optionsMonitor, IMapper map, UserService userService)
         {
             _dbContext = dbContext;
             _calendarService = calendarService;
             _configsetting = optionsMonitor.CurrentValue;
+            _userService = userService;
             _map = map;
         }
 
@@ -34,8 +37,8 @@ namespace VidyaSadhan_API.Services
         {
             try
             {
-                var result = await _dbContext.Demos.ToListAsync().ConfigureAwait(false);
-                return _map.Map<IEnumerable<DemoViewModel>>(result);
+                // var result = await _dbContext.Demos.ToListAsync().ConfigureAwait(false);
+                return _map.Map<IEnumerable<DemoViewModel>>(null);
             }
             catch (Exception)
             {
@@ -43,17 +46,69 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        public async Task<DemoViewModel> GetDemoById(int demoId)
+        public async Task<DemoViewModel> GetDemoById(string demoId)
         {
             try
             {
                 var result = await _dbContext.Demos.FirstOrDefaultAsync(x => x.CourseId == demoId).ConfigureAwait(false);
-                return _map.Map<DemoViewModel>(result);
+                return _map.Map<DemoViewModel>(null);
             }
             catch (Exception)
             {
                 throw;
             }
+        }
+
+        public async Task<IEnumerable<DemoViewModel>> GetDemoByUserId(string userId)
+        {
+            try
+            {
+                IEnumerable<Demo> demos = null;
+                var user = _userService.GetUserById(userId);
+                if(user.Role == UserRoles.Student)
+                {
+                    demos = await _dbContext.Demos.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
+                        .Where(y => y.Enrollments.Any(z => z.StudentID == userId)).ToListAsync();
+                }
+                else if(user.Role == UserRoles.Tutor)
+                {
+                    demos =   await _dbContext.Demos.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
+                       .Where(y => y.CourseAssignments.Any(a => a.InstructorId == userId)).ToListAsync();
+                }
+
+                var resultView = _map.Map<IEnumerable<DemoViewModel>>(demos);
+                var events = GetCalendarEvents(_configsetting.AdminEmail);
+                foreach (var item in resultView)
+                {
+                    Event cEvent = events.Items.FirstOrDefault(x => x.Id == item.ExternalCourseId);
+                    if(cEvent != null)
+                    {
+                        item.CalendarEvent = new CalendarEvent
+                        {
+                            Location = cEvent.Location,
+                            Attendees = cEvent.Attendees.Select(x => x.Email),
+                            Description = cEvent.Description,
+                            Start = cEvent.Start.DateTime.Value,
+                            End = cEvent.End.DateTime.Value,
+                            Organizer = cEvent.Organizer.Email,
+                            Summary = cEvent.Organizer.DisplayName,
+                            VideoLink = cEvent.HangoutLink
+                        };
+                    }
+                   
+                }
+                return resultView;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private Events GetCalendarEvents(string useremail)
+        {
+            var calendar = _calendarService.Initialize(useremail);
+            return _calendarService.ListEvents(calendar);
         }
 
         public async Task<int> SaveDemo(DemoViewModel demo)
@@ -63,6 +118,16 @@ namespace VidyaSadhan_API.Services
                 var calendar = _calendarService.Initialize(demo.CalendarEvent.UserEmail.IsNullOrWhiteSpace() ? _configsetting.AdminEmail : demo.CalendarEvent.UserEmail);
                 var cEvent = _calendarService.CreateEvent(calendar, demo.CalendarEvent);
                 demo.ExternalCourseId = cEvent.Id;
+                demo.CourseId = Guid.NewGuid().ToString();
+                foreach (var item in demo.CourseAssignments)
+                {
+                    item.CourseId = demo.CourseId;
+                }
+
+                foreach (var item in demo.Enrollments)
+                {
+                    item.CourseId = demo.CourseId;
+                }
                 _dbContext.Demos.Add(_map.Map<Demo>(demo));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }

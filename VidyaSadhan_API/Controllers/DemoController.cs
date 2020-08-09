@@ -46,11 +46,28 @@ namespace VidyaSadhan_API.Controllers
         [Route("GetById")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(string id)
         {
             try
             {
                 return Ok(await _DemoService.GetDemoById(id).ConfigureAwait(false));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in get Demo", null);
+                throw;
+            }
+        }
+
+        [HttpGet]
+        [Route("GetByUserId")]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> GetByUser(string userId)
+        {
+            try
+            {
+                return Ok(await _DemoService.GetDemoByUserId(userId).ConfigureAwait(false));
             }
             catch (Exception ex)
             {

@@ -47,7 +47,7 @@ namespace VidyaSadhan_API
         {
             services.AddCors(o => o.AddPolicy("trvistapolicy", builder =>
             {
-                builder.WithOrigins("http://localhost:4200","http://*.vidhyasadhan.com")
+                builder.WithOrigins("http://localhost:4200", "http://*.vidhyasadhan.com")
                 .SetIsOriginAllowedToAllowWildcardSubdomains()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
@@ -66,7 +66,9 @@ namespace VidyaSadhan_API
 
                     return result;
                 };
-            });
+            }).AddNewtonsoftJson(
+                options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                );
 
             services.AddDbContext<VSDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
             services.AddIdentity<Account, IdentityRole>(options =>
@@ -186,7 +188,7 @@ namespace VidyaSadhan_API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, VSDbContext vSDbContext)
         {
-          //  vSDbContext.Database.Migrate();
+            vSDbContext.Database.Migrate();
             app.UseCors("trvistapolicy");
             app.UsePreflightRequestHandler();
             //app.UseSwagger();

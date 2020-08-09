@@ -13,6 +13,9 @@ namespace VidyaSadhan_API.Models
         public string LastName { get; set; }
         public UserRoles Role { get; set; }
 
+        public DateTime? DateOfBirth { get; set; }
+        public string ProfilePic { get; set; }
+
         [JsonIgnore]
         public string Password { get; set; }
 
@@ -20,5 +23,14 @@ namespace VidyaSadhan_API.Models
         public List<RefreshTokenViewModel> RefreshTokens { get; set; }
 
         public List<AddressViewModel> Addresses { get; set; }
+
+        public ICollection<InstructorViewModel> Instructors { get; set; }
+
+        public ICollection<EnrolementViewModel> Enrollments { get; set; }
+
+        public ICollection<CourseAssignmentViewModel> CourseAssignments { get; set; }
+
+        public ICollection<StudentViewModel> Students { get; set; }
+
     }
 }

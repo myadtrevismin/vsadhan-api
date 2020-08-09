@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VidyaSadhan_API.Entities
+namespace VidyaSadhan_API.Models
 {
-    public class AcademicType
+    public class AcademicTypeViewModel
     {
-        [Key]
         public int AcademyTypeId { get; set; }
         public string Academy { get; set; }
-
-        public virtual ICollection<Instructor> Instructors { get; set; }
     }
 }

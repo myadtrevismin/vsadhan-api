@@ -27,6 +27,9 @@ namespace VidyaSadhan_API.Helpers.Mappers
             CreateMap<RefreshTokenSet, RefreshTokenViewModel>().ReverseMap();
             CreateMap<EnrolementViewModel, Enrollment>().ReverseMap();
             CreateMap<CourseAssignment, CourseAssignmentViewModel>().ReverseMap();
+            CreateMap<CourseViewModel, Entities.Course>().ReverseMap();
+            CreateMap<AcademicTypeViewModel, AcademicType>().ReverseMap();
+            
             //CreateMap<UpdateModel, User>();
         }
     }

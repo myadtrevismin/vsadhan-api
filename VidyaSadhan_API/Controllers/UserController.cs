@@ -119,6 +119,26 @@ namespace VidyaSadhan_API.Controllers
 
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("profile")]
+        [ProducesResponseType(typeof(IEnumerable<AccountViewModel>), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public IActionResult GetProfile(string userId)
+        {
+            try
+            {
+                return Ok(_userService.GetUserProfile(userId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in users", null);
+                throw;
+            }
+
+        }
+
+
         [HttpGet]
         [Route("allusers")]
         [ProducesResponseType(typeof(IEnumerable<AccountViewModel>), 200)]
@@ -135,6 +155,24 @@ namespace VidyaSadhan_API.Controllers
                 throw;
             }
             
+        }
+
+        [HttpPut]
+        [Route("update")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public IActionResult UpdateUser(AccountRequestViewModel Account)
+        {
+            try
+            {
+                return Ok(_userService.UpdateUser(Account));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in users", null);
+                throw;
+            }
+
         }
 
         [HttpGet]
@@ -211,6 +249,7 @@ namespace VidyaSadhan_API.Controllers
             return Ok(new { message = "Token revoked" });
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("roles/{role}")]
         [ProducesResponseType(typeof(bool), 200)]
