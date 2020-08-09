@@ -9,5 +9,6 @@ namespace VidyaSadhan_API.Entities
     {
         public int MediumId { get; set; }
         public string MediumName { get; set; }
+
     }
 }

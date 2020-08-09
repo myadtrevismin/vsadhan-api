@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -84,7 +85,7 @@ namespace VidyaSadhan_API.Services
             {
                 results = await _userManager.CreateAsync(User, register.Password).ConfigureAwait(false);
                 if (results.Succeeded)
-                {            
+                {
                     await _userManager.AddToRoleAsync(User, register.Role.ToString());
                     switch (register.Role)
                     {
@@ -98,16 +99,108 @@ namespace VidyaSadhan_API.Services
                         case UserRoles.Admin:
                         default:
                             return results.Succeeded;
-                    }               
+                    }
                     await _identityContext.SaveChangesAsync().ConfigureAwait(false);
                     await GenerateEmailToken(User.Email);
                     // _identityContext.AccountAddress.Add(new Address {   })
                 }
                 return results.Succeeded;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new VSException("Unable to Register With Following Errors:", results?.Errors);
+            }
+        }
+
+        public async Task<bool> UpdateUser(AccountRequestViewModel Account)
+        {
+            try
+            {
+                var IsUserExist = _identityContext.Users.Include("Addresses").Include("Instructors")
+                    .Include("Students").FirstOrDefault(x => x.NormalizedEmail == Account.Email.ToUpperInvariant());           
+                if(IsUserExist == null)
+                {
+                    var exception = new VSException("Email already registered with:" + Account.Email);
+                    exception.Value = "Looks like Email is already registered with" + Account.Email;
+                    throw exception;
+                };
+
+                IsUserExist.Sex = Account.Gender;
+                IsUserExist.DateOfBirth = Account.Birthdate;
+
+                var Instructor = IsUserExist.Instructors.FirstOrDefault(x => x.UserId == IsUserExist.Id);
+                InstructorMapping(Account, Instructor);
+
+                UpdateAddressSection(Account, IsUserExist);
+                _identityContext.Users.Update(IsUserExist);
+                var result = await _identityContext.SaveChangesAsync();
+                if (result == 3)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                var exception = new VSException("Unable to Update", ex);
+                exception.Value = "Unable to Update:" + ex.StackTrace;
+                throw exception; throw;
+            }
+
+        }
+
+        private void UpdateAddressSection(AccountRequestViewModel Account, Account IsUserExist)
+        {
+            var userAddress = IsUserExist.Addresses.FirstOrDefault(x => x.AddressId == Account.Address.AddressId && x.AddressType.Equals("1"));
+            if (userAddress != null)
+            {
+                foreach (var item in IsUserExist.Addresses)
+                {
+                    if(item.AddressId == Account.Address.AddressId && item.AddressType.Equals("1"))
+                    {
+                        item.Address1 = Account.Address.Address1;
+                        item.Address2 = Account.Address.Address2;
+                        item.AddressId = Account.Address.AddressId;
+                        item.AddressType = Account.Address.AddressType;
+                        item.City = Account.Address.City;
+                        item.CountryCd = Account.Address.CountryCd;
+                        item.PinCode = Account.Address.PinCode;
+                        item.StateCd = Account.Address.StateCd;
+                        item.UserId = userAddress.UserId;
+                    }
+                } 
+            }
+            else
+            {
+                IsUserExist.Addresses.Add(_map.Map<Address>(Account.Address));
+            }
+        }
+
+        private static void InstructorMapping(AccountRequestViewModel Account, Instructor Instructor)
+        {
+            if (Instructor != null)
+            {
+                Instructor.AcademyTypeId = Account.Instructor.AcademyTypeId;
+                Instructor.AvailableDays = Account.Instructor.AvailableDays;
+                Instructor.HighestEducation = Account.Instructor.HighestEducation;
+                Instructor.Board = Account.Instructor.Board;
+                Instructor.Currency = Account.Instructor.Currency;
+                Instructor.DemoLink = Account.Instructor.DemoLink;
+                Instructor.HourlyRate = Account.Instructor.HourlyRate;
+                Instructor.IdDoc =  Account.Instructor.IdDoc;
+                Instructor.IdType = Account.Instructor.IdType;
+                Instructor.Intersets = Account.Instructor.Intersets;
+                Instructor.IsTutorBefore = Account.Instructor.IsTutorBefore;
+                Instructor.Level = Account.Instructor.Level;
+                Instructor.Medium = Account.Instructor.Medium;
+                Instructor.Preference = Account.Instructor.Preference;
+                Instructor.PreferredDistance = Account.Instructor.PreferredDistance;
+                Instructor.PreferredTimeSlot = Account.Instructor.PreferredTimeSlot;
+                Instructor.ProfessionalDescription = Account.Instructor.ProfessionalDescription;
+                Instructor.Subjects = Account.Instructor.Subjects;
             }
         }
 
@@ -156,7 +249,7 @@ namespace VidyaSadhan_API.Services
             {
                 _logger.LogError("Looks Like you are not registered");
                 return false;
-            }   
+            }
         }
 
         public async Task<AuthenticateResponseViewModel> Login(LoginViewModel login)
@@ -164,7 +257,7 @@ namespace VidyaSadhan_API.Services
             try
             {
                 var userexists = await _userManager.FindByEmailAsync(login.Email);
-                 
+
                 if (userexists == null)
                 {
                     var exception = new VSException("Looks like Email is not registered");
@@ -172,7 +265,7 @@ namespace VidyaSadhan_API.Services
                     throw exception;
                 }
 
-                if(userexists.Role != login.Role)
+                if (userexists.Role != login.Role)
                 {
                     var exception = new VSException("Looks like Email is not registered as intended type");
                     exception.Value = "Looks like Email is not registered as intended type";
@@ -343,6 +436,34 @@ namespace VidyaSadhan_API.Services
 
         }
 
+        public AccountRequestViewModel GetUserProfile(string user)
+        {
+            try
+            {
+                var userdata = _identityContext.Users.Include("Addresses").Include("Instructors").SingleOrDefault(x => x.Id == user);
+                return new AccountRequestViewModel
+                {
+                    Address = userdata.Addresses?.Any(x => x.AddressType == "1") == true ?
+                    _map.Map<AddressViewModel>(userdata.Addresses.FirstOrDefault(x => x.AddressType == "1")) : new AddressViewModel { },
+                    Birthdate = userdata.DateOfBirth.HasValue ? userdata.DateOfBirth.Value : (DateTime?)null,
+                    Email = userdata.Email,
+                    FirstName = userdata.FirstName,
+                    lastName = userdata.LastName,
+                    Gender = userdata.Sex,
+                    Instructor = _map.Map<InstructorViewModel>(userdata.Instructors.FirstOrDefault()),
+                    Phone = userdata.PhoneNumber,
+                    ProfilePic = userdata.ProfilePic
+                };
+            }
+            catch (Exception ex)
+            {
+                var exception = new VSException("Unable to load Users", ex);
+                exception.Value = ex.StackTrace;
+                throw exception;
+            }
+
+        }
+
         public AccountViewModel GetUserByEmailId(string user)
         {
             try
@@ -453,7 +574,7 @@ namespace VidyaSadhan_API.Services
             var newRefreshToken = await _userManager.GenerateUserTokenAsync(user, "Default", "RefreshToken");
             await _userManager.SetAuthenticationTokenAsync(user, "Default", "RefreshToken", newRefreshToken);
             var userModel = _map.Map<AccountViewModel>(user);
-           // userModel.RefreshTokens.Add(newRefreshToken);
+            // userModel.RefreshTokens.Add(newRefreshToken);
             return userModel;
         }
 

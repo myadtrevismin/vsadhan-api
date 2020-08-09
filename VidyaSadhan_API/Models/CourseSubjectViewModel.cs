@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 
 namespace VidyaSadhan_API.Models
 {
-    public class StudentViewModel
+    public class CourseSubjectViewModel
     {
-        public string UserId { get; set; }
-        public UserViewModel Account { get; set; }
     }
 }

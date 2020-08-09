@@ -3,10 +3,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace VidyaSadhan_API.Migrations
 {
-    public partial class initial : Migration
+    public partial class initialmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AcademicTypes",
+                columns: table => new
+                {
+                    AcademyTypeId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Academy = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AcademicTypes", x => x.AcademyTypeId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AddressType",
                 columns: table => new
@@ -56,7 +69,9 @@ namespace VidyaSadhan_API.Migrations
                     FirstName = table.Column<string>(maxLength: 100, nullable: false),
                     LastName = table.Column<string>(maxLength: 100, nullable: false),
                     Sex = table.Column<string>(maxLength: 6, nullable: true),
-                    EnrollmentDate = table.Column<DateTime>(nullable: false)
+                    EnrollmentDate = table.Column<DateTime>(nullable: false),
+                    VerificationToken = table.Column<string>(nullable: true),
+                    Role = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,15 +79,55 @@ namespace VidyaSadhan_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Boards",
+                columns: table => new
+                {
+                    BoardId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BoardName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Boards", x => x.BoardId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Country",
                 columns: table => new
                 {
                     CountryCd = table.Column<string>(maxLength: 4, nullable: false),
-                    CountryName = table.Column<string>(maxLength: 255, nullable: true)
+                    CountryName = table.Column<string>(maxLength: 255, nullable: true),
+                    PhoneCode = table.Column<string>(maxLength: 10, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Country", x => x.CountryCd);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Groups",
+                columns: table => new
+                {
+                    GroupId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GroupName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Groups", x => x.GroupId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Mediums",
+                columns: table => new
+                {
+                    MediumId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MediumName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Mediums", x => x.MediumId);
                 });
 
             migrationBuilder.CreateTable(
@@ -260,6 +315,32 @@ namespace VidyaSadhan_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshTokenSets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(nullable: true),
+                    Expires = table.Column<DateTime>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    CreatedByIp = table.Column<string>(nullable: true),
+                    Revoked = table.Column<DateTime>(nullable: true),
+                    RevokedByIp = table.Column<string>(nullable: true),
+                    ReplacedByToken = table.Column<string>(nullable: true),
+                    AccountId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokenSets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokenSets_AspNetUsers_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Student",
                 columns: table => new
                 {
@@ -277,14 +358,61 @@ namespace VidyaSadhan_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Subjects",
+                columns: table => new
+                {
+                    SubjectId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(nullable: true),
+                    Level = table.Column<string>(nullable: true),
+                    BoardId = table.Column<int>(nullable: true),
+                    MediumId = table.Column<int>(nullable: false),
+                    GroupId = table.Column<int>(nullable: true),
+                    AcademyTypeId = table.Column<int>(nullable: false),
+                    AcademicTypeAcademyTypeId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subjects", x => x.SubjectId);
+                    table.ForeignKey(
+                        name: "FK_Subjects_AcademicTypes_AcademicTypeAcademyTypeId",
+                        column: x => x.AcademicTypeAcademyTypeId,
+                        principalTable: "AcademicTypes",
+                        principalColumn: "AcademyTypeId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Subjects_Boards_BoardId",
+                        column: x => x.BoardId,
+                        principalTable: "Boards",
+                        principalColumn: "BoardId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Subjects_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "GroupId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Subjects_Mediums_MediumId",
+                        column: x => x.MediumId,
+                        principalTable: "Mediums",
+                        principalColumn: "MediumId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Course",
                 columns: table => new
                 {
-                    CourseId = table.Column<int>(nullable: false),
+                    CourseId = table.Column<string>(nullable: false),
                     Title = table.Column<string>(maxLength: 150, nullable: true),
                     CourseDescription = table.Column<string>(nullable: true),
+                    StartDate = table.Column<DateTime>(nullable: false),
+                    EndDate = table.Column<DateTime>(nullable: false),
                     Credits = table.Column<int>(nullable: false),
-                    DepartmentID = table.Column<int>(nullable: false)
+                    ExternalCourseId = table.Column<string>(nullable: true),
+                    DepartmentID = table.Column<int>(nullable: true),
+                    Discriminator = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -294,7 +422,7 @@ namespace VidyaSadhan_API.Migrations
                         column: x => x.DepartmentID,
                         principalTable: "Department",
                         principalColumn: "DepartmentID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -321,24 +449,54 @@ namespace VidyaSadhan_API.Migrations
                 name: "CourseAssignment",
                 columns: table => new
                 {
-                    InstructorID = table.Column<int>(nullable: false),
-                    CourseID = table.Column<int>(nullable: false),
-                    InstructorUserId = table.Column<string>(nullable: false)
+                    InstructorId = table.Column<string>(nullable: false),
+                    CourseId = table.Column<string>(nullable: false),
+                    InstructorUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CourseAssignment", x => new { x.CourseID, x.InstructorID });
+                    table.PrimaryKey("PK_CourseAssignment", x => new { x.CourseId, x.InstructorId });
                     table.ForeignKey(
-                        name: "FK_CourseAssignment_Course_CourseID",
-                        column: x => x.CourseID,
+                        name: "FK_CourseAssignment_Course_CourseId",
+                        column: x => x.CourseId,
                         principalTable: "Course",
                         principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseAssignment_AspNetUsers_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CourseAssignment_Instructor_InstructorUserId",
                         column: x => x.InstructorUserId,
                         principalTable: "Instructor",
                         principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseSubjects",
+                columns: table => new
+                {
+                    CourseId = table.Column<string>(nullable: false),
+                    SubjectId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseSubjects", x => new { x.CourseId, x.SubjectId });
+                    table.ForeignKey(
+                        name: "FK_CourseSubjects_Course_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Course",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseSubjects_Subjects_SubjectId",
+                        column: x => x.SubjectId,
+                        principalTable: "Subjects",
+                        principalColumn: "SubjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -346,27 +504,25 @@ namespace VidyaSadhan_API.Migrations
                 name: "Enrollment",
                 columns: table => new
                 {
-                    EnrollmentID = table.Column<int>(nullable: false)
+                    EnrollementId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseID = table.Column<int>(nullable: false),
-                    StudentID = table.Column<int>(nullable: false),
+                    CourseId = table.Column<string>(nullable: true),
+                    StudentID = table.Column<string>(nullable: true),
                     Grade = table.Column<int>(nullable: true),
-                    Fk_Std_Crs = table.Column<int>(nullable: true),
-                    Fk_Std_Enr = table.Column<string>(nullable: true),
-                    StudentUserId = table.Column<string>(nullable: false)
+                    StudentUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Enrollment", x => x.EnrollmentID);
+                    table.PrimaryKey("PK_Enrollment", x => x.EnrollementId);
                     table.ForeignKey(
-                        name: "FK_Enrollment_Course_Fk_Std_Crs",
-                        column: x => x.Fk_Std_Crs,
+                        name: "FK_Enrollment_Course_CourseId",
+                        column: x => x.CourseId,
                         principalTable: "Course",
                         principalColumn: "CourseId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Enrollment_AspNetUsers_Fk_Std_Enr",
-                        column: x => x.Fk_Std_Enr,
+                        name: "FK_Enrollment_AspNetUsers_StudentID",
+                        column: x => x.StudentID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -375,7 +531,7 @@ namespace VidyaSadhan_API.Migrations
                         column: x => x.StudentUserId,
                         principalTable: "Student",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -454,9 +610,19 @@ namespace VidyaSadhan_API.Migrations
                 column: "DepartmentID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseAssignment_InstructorId",
+                table: "CourseAssignment",
+                column: "InstructorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CourseAssignment_InstructorUserId",
                 table: "CourseAssignment",
                 column: "InstructorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseSubjects_SubjectId",
+                table: "CourseSubjects",
+                column: "SubjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Department_AdministratorId",
@@ -464,14 +630,14 @@ namespace VidyaSadhan_API.Migrations
                 column: "AdministratorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrollment_Fk_Std_Crs",
+                name: "IX_Enrollment_CourseId",
                 table: "Enrollment",
-                column: "Fk_Std_Crs");
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrollment_Fk_Std_Enr",
+                name: "IX_Enrollment_StudentID",
                 table: "Enrollment",
-                column: "Fk_Std_Enr");
+                column: "StudentID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Enrollment_StudentUserId",
@@ -487,6 +653,31 @@ namespace VidyaSadhan_API.Migrations
                 name: "IX_Questionnaire_InstructorUserId",
                 table: "Questionnaire",
                 column: "InstructorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokenSets_AccountId",
+                table: "RefreshTokenSets",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subjects_AcademicTypeAcademyTypeId",
+                table: "Subjects",
+                column: "AcademicTypeAcademyTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subjects_BoardId",
+                table: "Subjects",
+                column: "BoardId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subjects_GroupId",
+                table: "Subjects",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subjects_MediumId",
+                table: "Subjects",
+                column: "MediumId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -519,16 +710,25 @@ namespace VidyaSadhan_API.Migrations
                 name: "CourseAssignment");
 
             migrationBuilder.DropTable(
+                name: "CourseSubjects");
+
+            migrationBuilder.DropTable(
                 name: "Enrollment");
 
             migrationBuilder.DropTable(
                 name: "Question");
 
             migrationBuilder.DropTable(
+                name: "RefreshTokenSets");
+
+            migrationBuilder.DropTable(
                 name: "State");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Subjects");
 
             migrationBuilder.DropTable(
                 name: "Course");
@@ -538,6 +738,18 @@ namespace VidyaSadhan_API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Questionnaire");
+
+            migrationBuilder.DropTable(
+                name: "AcademicTypes");
+
+            migrationBuilder.DropTable(
+                name: "Boards");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
+
+            migrationBuilder.DropTable(
+                name: "Mediums");
 
             migrationBuilder.DropTable(
                 name: "Department");

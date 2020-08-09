@@ -10,8 +10,8 @@ using VidyaSadhan_API.Extensions;
 namespace VidyaSadhan_API.Migrations
 {
     [DbContext(typeof(VSDbContext))]
-    [Migration("20200806172948_forignkeycorrection")]
-    partial class forignkeycorrection
+    [Migration("20200807050920_initialmigration")]
+    partial class initialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -352,8 +352,8 @@ namespace VidyaSadhan_API.Migrations
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.Course", b =>
                 {
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CourseDescription")
                         .HasColumnType("nvarchar(max)");
@@ -361,7 +361,7 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<int>("Credits")
                         .HasColumnType("int");
 
-                    b.Property<int>("DepartmentID")
+                    b.Property<int?>("DepartmentID")
                         .HasColumnType("int");
 
                     b.Property<string>("Discriminator")
@@ -392,8 +392,8 @@ namespace VidyaSadhan_API.Migrations
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.CourseAssignment", b =>
                 {
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("InstructorId")
                         .HasColumnType("nvarchar(450)");
@@ -412,13 +412,13 @@ namespace VidyaSadhan_API.Migrations
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.CourseSubject", b =>
                 {
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
-                    b.HasKey("CourseID", "SubjectId");
+                    b.HasKey("CourseId", "SubjectId");
 
                     b.HasIndex("SubjectId");
 
@@ -462,8 +462,8 @@ namespace VidyaSadhan_API.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("Grade")
                         .HasColumnType("int");
@@ -476,7 +476,7 @@ namespace VidyaSadhan_API.Migrations
 
                     b.HasKey("EnrollementId");
 
-                    b.HasIndex("CourseID");
+                    b.HasIndex("CourseId");
 
                     b.HasIndex("StudentID");
 
@@ -764,15 +764,13 @@ namespace VidyaSadhan_API.Migrations
                 {
                     b.HasOne("VidyaSadhan_API.Entities.Department", "Department")
                         .WithMany("Courses")
-                        .HasForeignKey("DepartmentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartmentID");
                 });
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.CourseAssignment", b =>
                 {
                     b.HasOne("VidyaSadhan_API.Entities.Course", "Course")
-                        .WithMany("CourseAssignments")
+                        .WithMany()
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -791,8 +789,8 @@ namespace VidyaSadhan_API.Migrations
             modelBuilder.Entity("VidyaSadhan_API.Entities.CourseSubject", b =>
                 {
                     b.HasOne("VidyaSadhan_API.Entities.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
+                        .WithMany("CourseSubjects")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -814,9 +812,7 @@ namespace VidyaSadhan_API.Migrations
                 {
                     b.HasOne("VidyaSadhan_API.Entities.Course", "Course")
                         .WithMany("Enrollments")
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourseId");
 
                     b.HasOne("VidyaSadhan_API.Entities.Account", "Student")
                         .WithMany()

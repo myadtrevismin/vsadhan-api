@@ -9,9 +9,14 @@ namespace VidyaSadhan_API.Entities
 {
     public class Course
     {
+        public Course()
+        {
+           
+        }
+
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Display(Name = "Number")]
-        public int CourseId { get; set; }
+        public string CourseId { get; set; }
 
         [StringLength(150, MinimumLength = 3)]
         public string Title { get; set; }
@@ -31,6 +36,7 @@ namespace VidyaSadhan_API.Entities
 
         public Department Department { get; set; }
         public ICollection<Enrollment> Enrollments { get; set; }
+        public virtual ICollection<CourseSubject> CourseSubjects { get; set; }
         public ICollection<CourseAssignment> CourseAssignments { get; set; }
     }
 }

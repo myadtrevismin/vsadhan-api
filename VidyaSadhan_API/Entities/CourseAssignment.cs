@@ -5,16 +5,12 @@ namespace VidyaSadhan_API.Entities
 {
     public class CourseAssignment
     {
-
         public string InstructorId { get; set; }
 
-        public int CourseId { get; set; }
-
-
-        [ForeignKey("InstructorId")]
         public Account Instructor { get; set; }
 
-        [ForeignKey("CourseId")]
+        public string CourseId { get; set; }
+
         public Course Course { get; set; }
     }
 }

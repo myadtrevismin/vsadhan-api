@@ -26,6 +26,11 @@ namespace VidyaSadhan_API.Models
         public DepartmentViewModel Department { get; set; }
         public ICollection<EnrolementViewModel> Enrollments { get; set; }
         public ICollection<CourseAssignmentViewModel> CourseAssignments { get; set; }
+        public string CourseDescription { get; set; }
+
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public virtual ICollection<CourseSubjectViewModel> CourseSubjects { get; set; }
 
     }
 }

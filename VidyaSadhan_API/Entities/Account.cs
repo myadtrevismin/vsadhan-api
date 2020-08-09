@@ -23,7 +23,8 @@ namespace VidyaSadhan_API.Entities
 
         [StringLength(6)]
         public string Sex { get; set; }
-        //public DateTime DateOfBirth { get; set; }
+
+        public DateTime? DateOfBirth { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
@@ -33,11 +34,17 @@ namespace VidyaSadhan_API.Entities
 
         public UserRoles Role { get; set; }
 
+        public string ProfilePic { get; set; }
+
         public ICollection<Instructor> Instructors { get; set; }
 
         public ICollection<Student> Students { get; set; }
 
         public ICollection<Address> Addresses { get; set; }
+
+        public ICollection<CourseAssignment> CourseAssignments { get; set; }
+
+        public ICollection<Enrollment> Enrollments { get; set; }
 
         [JsonIgnore]
         public List<RefreshTokenSet> RefreshTokens { get; set; }

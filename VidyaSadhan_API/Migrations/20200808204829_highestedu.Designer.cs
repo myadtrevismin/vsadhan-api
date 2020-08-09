@@ -10,8 +10,8 @@ using VidyaSadhan_API.Extensions;
 namespace VidyaSadhan_API.Migrations
 {
     [DbContext(typeof(VSDbContext))]
-    [Migration("20200711200449_initial")]
-    partial class initial
+    [Migration("20200808204829_highestedu")]
+    partial class highestedu
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -152,6 +152,21 @@ namespace VidyaSadhan_API.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("VidyaSadhan_API.Entities.AcademicType", b =>
+                {
+                    b.Property<int>("AcademyTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Academy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AcademyTypeId");
+
+                    b.ToTable("AcademicTypes");
+                });
+
             modelBuilder.Entity("VidyaSadhan_API.Entities.Account", b =>
                 {
                     b.Property<string>("Id")
@@ -163,6 +178,9 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
@@ -207,6 +225,12 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -220,6 +244,9 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
+
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -295,6 +322,21 @@ namespace VidyaSadhan_API.Migrations
                     b.ToTable("AddressType");
                 });
 
+            modelBuilder.Entity("VidyaSadhan_API.Entities.Board", b =>
+                {
+                    b.Property<int>("BoardId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BoardName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BoardId");
+
+                    b.ToTable("Boards");
+                });
+
             modelBuilder.Entity("VidyaSadhan_API.Entities.Country", b =>
                 {
                     b.Property<string>("CountryCd")
@@ -305,6 +347,10 @@ namespace VidyaSadhan_API.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasMaxLength(255);
 
+                    b.Property<string>("PhoneCode")
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
                     b.HasKey("CountryCd");
 
                     b.ToTable("Country");
@@ -312,8 +358,8 @@ namespace VidyaSadhan_API.Migrations
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.Course", b =>
                 {
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CourseDescription")
                         .HasColumnType("nvarchar(max)");
@@ -321,8 +367,21 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<int>("Credits")
                         .HasColumnType("int");
 
-                    b.Property<int>("DepartmentID")
+                    b.Property<int?>("DepartmentID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExternalCourseId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(150)")
@@ -333,25 +392,38 @@ namespace VidyaSadhan_API.Migrations
                     b.HasIndex("DepartmentID");
 
                     b.ToTable("Course");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Course");
                 });
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.CourseAssignment", b =>
                 {
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("InstructorID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("InstructorUserId")
-                        .IsRequired()
+                    b.Property<string>("CourseId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CourseID", "InstructorID");
+                    b.Property<string>("InstructorId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasIndex("InstructorUserId");
+                    b.HasKey("CourseId", "InstructorId");
+
+                    b.HasIndex("InstructorId");
 
                     b.ToTable("CourseAssignment");
+                });
+
+            modelBuilder.Entity("VidyaSadhan_API.Entities.CourseSubject", b =>
+                {
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CourseId", "SubjectId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("CourseSubjects");
                 });
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.Department", b =>
@@ -386,39 +458,47 @@ namespace VidyaSadhan_API.Migrations
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.Enrollment", b =>
                 {
-                    b.Property<int>("EnrollmentID")
+                    b.Property<int>("EnrollementId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Fk_Std_Crs")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Fk_Std_Enr")
+                    b.Property<string>("CourseId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("Grade")
                         .HasColumnType("int");
 
-                    b.Property<int>("StudentID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StudentUserId")
-                        .IsRequired()
+                    b.Property<string>("StudentID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("EnrollmentID");
+                    b.Property<string>("StudentUserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasIndex("Fk_Std_Crs");
+                    b.HasKey("EnrollementId");
 
-                    b.HasIndex("Fk_Std_Enr");
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("StudentID");
 
                     b.HasIndex("StudentUserId");
 
                     b.ToTable("Enrollment");
+                });
+
+            modelBuilder.Entity("VidyaSadhan_API.Entities.Group", b =>
+                {
+                    b.Property<int>("GroupId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("GroupName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("GroupId");
+
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.Instructor", b =>
@@ -426,9 +506,86 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("AcademicTypeAcademyTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademyTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AvailableDays")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Board")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DemoLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HighestEducation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("HourlyRate")
+                        .HasColumnType("float");
+
+                    b.Property<string>("IdDoc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Intersets")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsTutorBefore")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Medium")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MyProperty")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Preference")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PreferredDistance")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PreferredTimeSlot")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfessionalDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subjects")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("UserId");
 
+                    b.HasIndex("AcademicTypeAcademyTypeId");
+
                     b.ToTable("Instructor");
+                });
+
+            modelBuilder.Entity("VidyaSadhan_API.Entities.Medium", b =>
+                {
+                    b.Property<int>("MediumId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("MediumName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MediumId");
+
+                    b.ToTable("Mediums");
                 });
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.Question", b =>
@@ -515,6 +672,54 @@ namespace VidyaSadhan_API.Migrations
                     b.ToTable("Student");
                 });
 
+            modelBuilder.Entity("VidyaSadhan_API.Entities.Subject", b =>
+                {
+                    b.Property<int>("SubjectId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AcademicTypeAcademyTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademyTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BoardId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MediumId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubjectId");
+
+                    b.HasIndex("AcademicTypeAcademyTypeId");
+
+                    b.HasIndex("BoardId");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("MediumId");
+
+                    b.ToTable("Subjects");
+                });
+
+            modelBuilder.Entity("VidyaSadhan_API.Entities.Demo", b =>
+                {
+                    b.HasBaseType("VidyaSadhan_API.Entities.Course");
+
+                    b.HasDiscriminator().HasValue("Demo");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -566,10 +771,55 @@ namespace VidyaSadhan_API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("VidyaSadhan_API.Entities.Account", b =>
+                {
+                    b.OwnsMany("VidyaSadhan_API.Entities.RefreshTokenSet", "RefreshTokens", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("AccountId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<DateTime>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedByIp")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime>("Expires")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("ReplacedByToken")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime?>("Revoked")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("RevokedByIp")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Token")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("AccountId");
+
+                            b1.ToTable("RefreshTokenSets");
+
+                            b1.WithOwner()
+                                .HasForeignKey("AccountId");
+                        });
+                });
+
             modelBuilder.Entity("VidyaSadhan_API.Entities.Address", b =>
                 {
                     b.HasOne("VidyaSadhan_API.Entities.Account", "Account")
-                        .WithMany()
+                        .WithMany("Addresses")
                         .HasForeignKey("UserId");
                 });
 
@@ -577,22 +827,35 @@ namespace VidyaSadhan_API.Migrations
                 {
                     b.HasOne("VidyaSadhan_API.Entities.Department", "Department")
                         .WithMany("Courses")
-                        .HasForeignKey("DepartmentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartmentID");
                 });
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.CourseAssignment", b =>
                 {
                     b.HasOne("VidyaSadhan_API.Entities.Course", "Course")
                         .WithMany("CourseAssignments")
-                        .HasForeignKey("CourseID")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VidyaSadhan_API.Entities.Instructor", "Instructor")
+                    b.HasOne("VidyaSadhan_API.Entities.Account", "Instructor")
                         .WithMany("CourseAssignments")
-                        .HasForeignKey("InstructorUserId")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("VidyaSadhan_API.Entities.CourseSubject", b =>
+                {
+                    b.HasOne("VidyaSadhan_API.Entities.Course", "Course")
+                        .WithMany("CourseSubjects")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VidyaSadhan_API.Entities.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -608,21 +871,23 @@ namespace VidyaSadhan_API.Migrations
                 {
                     b.HasOne("VidyaSadhan_API.Entities.Course", "Course")
                         .WithMany("Enrollments")
-                        .HasForeignKey("Fk_Std_Crs");
+                        .HasForeignKey("CourseId");
 
                     b.HasOne("VidyaSadhan_API.Entities.Account", "Student")
-                        .WithMany()
-                        .HasForeignKey("Fk_Std_Enr");
+                        .WithMany("Enrollments")
+                        .HasForeignKey("StudentID");
 
                     b.HasOne("VidyaSadhan_API.Entities.Student", null)
                         .WithMany("Enrollments")
-                        .HasForeignKey("StudentUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StudentUserId");
                 });
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.Instructor", b =>
                 {
+                    b.HasOne("VidyaSadhan_API.Entities.AcademicType", "AcademicType")
+                        .WithMany("Instructors")
+                        .HasForeignKey("AcademicTypeAcademyTypeId");
+
                     b.HasOne("VidyaSadhan_API.Entities.Account", "Account")
                         .WithMany("Instructors")
                         .HasForeignKey("UserId")
@@ -651,6 +916,27 @@ namespace VidyaSadhan_API.Migrations
                     b.HasOne("VidyaSadhan_API.Entities.Account", "Account")
                         .WithMany("Students")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("VidyaSadhan_API.Entities.Subject", b =>
+                {
+                    b.HasOne("VidyaSadhan_API.Entities.AcademicType", "AcademicType")
+                        .WithMany()
+                        .HasForeignKey("AcademicTypeAcademyTypeId");
+
+                    b.HasOne("VidyaSadhan_API.Entities.Board", "Board")
+                        .WithMany()
+                        .HasForeignKey("BoardId");
+
+                    b.HasOne("VidyaSadhan_API.Entities.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId");
+
+                    b.HasOne("VidyaSadhan_API.Entities.Medium", "Medium")
+                        .WithMany()
+                        .HasForeignKey("MediumId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
