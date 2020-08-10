@@ -41,6 +41,18 @@ namespace VidyaSadhan_API.Services
             return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
+        public async Task<int> UpdateEnrollment(EnrolementViewModel enrollment)
+        {
+            var enrollmentselected = _dbContext.Enrollments.FirstOrDefault(x => x.EnrollementId == enrollment.EnrollementId);
+            if(enrollmentselected != null)
+            {
+                enrollmentselected.Status = enrollment.Status;
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+            return 0;
+        }
+
+
         public async Task<int> UpdateStudent(StudentViewModel instructor)
         {
             _dbContext.Students.Update(_map.Map<Student>(instructor));

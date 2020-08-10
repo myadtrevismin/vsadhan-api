@@ -12,6 +12,8 @@ namespace VidyaSadhan_API.Models
         public int EnrollementId { get; set; }
         public string CourseId { get; set; }
 
+        public Status Status { get; set; }
+
         [JsonIgnore]
         public CourseViewModel Course { get; set; }
         public string StudentID { get; set; }

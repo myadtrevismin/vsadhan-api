@@ -21,6 +21,11 @@ namespace VidyaSadhan_API.Models
 
         public string ExternalCourseId { get; set; }
 
+        public string Langitude { get; set; }
+        public string Latitude { get; set; }
+        public string LocationId { get; set; }
+        public string LocationName { get; set; }
+
         public CalendarEvent CalendarEvent { get; set; }
 
         public DepartmentViewModel Department { get; set; }

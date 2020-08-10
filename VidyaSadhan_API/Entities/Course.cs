@@ -32,6 +32,11 @@ namespace VidyaSadhan_API.Entities
 
         public string ExternalCourseId { get; set; }
 
+        public string Langitude { get; set; }
+        public string Latitude { get; set; }
+        public string LocationId { get; set; }
+        public string LocationName { get; set; }
+
         public int? DepartmentID { get; set; }
 
         public Department Department { get; set; }

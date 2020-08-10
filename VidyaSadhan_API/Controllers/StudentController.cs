@@ -40,5 +40,13 @@ namespace VidyaSadhan_API.Controllers
         {
             return Ok(await _studentService.GetStudentById(userid));
         }
+
+        [HttpPut("enrollment")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> Put(EnrolementViewModel enrollment)
+        {
+            return Ok(await _studentService.UpdateEnrollment(enrollment));
+        }
     }
 }

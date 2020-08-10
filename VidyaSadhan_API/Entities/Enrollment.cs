@@ -14,6 +14,8 @@ namespace VidyaSadhan_API.Entities
         [DisplayFormat(NullDisplayText = "No grade")]
         public Grade? Grade { get; set; }
 
+        public Status Status { get; set; }
+
 
         [ForeignKey("StudentID")]
         public Account Student { get; set; }
