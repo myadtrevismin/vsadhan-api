@@ -13,17 +13,17 @@ using VidyaSadhan_API.Services;
 
 namespace VidyaSadhan_API.Controllers
 {
-    [Route("api/Enrollments")]
+    [Route("api/Departments")]
     [ApiController]
-    public class EnrollmentController : ControllerBase
+    public class DepartmentController : ControllerBase
     {
-        private readonly ILogger<EnrollmentController> _logger;
-        private readonly EnrollmentService _enrollmentService;
+        private readonly ILogger<DepartmentController> _logger;
+        private readonly DepartmentService _departmentService;
 
-        public EnrollmentController(ILogger<EnrollmentController> logger, EnrollmentService enrollmentService)
+        public DepartmentController(ILogger<DepartmentController> logger, DepartmentService departmentService)
         {
             _logger = logger;
-            _enrollmentService = enrollmentService;
+            _departmentService = departmentService;
         }
 
         [HttpGet]
@@ -33,11 +33,11 @@ namespace VidyaSadhan_API.Controllers
         {
             try
             {
-                return Ok(await _enrollmentService.GetEnrollmentById(id).ConfigureAwait(false));
+                return Ok(await _departmentService.GetDepartmentById(id).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured in get Enrollment", null);
+                _logger.LogError(ex, "Error Occured in get Department", null);
                 throw;
             }
         }
@@ -50,15 +50,15 @@ namespace VidyaSadhan_API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
-        public async Task<IActionResult> Post([FromBody] EnrolementViewModel Enrollment)
+        public async Task<IActionResult> Post([FromBody] DepartmentViewModel department)
         {
             try
             {
-                return Ok(await _enrollmentService.SaveEnrollment(Enrollment).ConfigureAwait(false));
+                return Ok(await _departmentService.SaveDepartment(department).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured in save Enrollment", null);
+                _logger.LogError(ex, "Error Occured in save Department", null);
                 throw;
             }
         }
@@ -71,15 +71,15 @@ namespace VidyaSadhan_API.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
-        public async Task<IActionResult> Put(EnrolementViewModel Enrollment)
+        public async Task<IActionResult> Put(DepartmentViewModel department)
         {
             try
             {
-                return Ok(await _enrollmentService.UpdateEnrollment(Enrollment).ConfigureAwait(false));
+                return Ok(await _departmentService.UpdateDepartment(department).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured in update Enrollment", null);
+                _logger.LogError(ex, "Error Occured in update Department", null);
                 throw;
             }
         }
@@ -87,20 +87,20 @@ namespace VidyaSadhan_API.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Enrollment"></param>
+        /// <param name="Department"></param>
         /// <returns></returns>
         [HttpDelete]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
-        public async Task<IActionResult> Delete(EnrolementViewModel Enrollment)
+        public async Task<IActionResult> Delete(DepartmentViewModel department)
         {
             try
             {
-                return Ok(await _enrollmentService.DeleteEnrollment(Enrollment).ConfigureAwait(false));
+                return Ok(await _departmentService.DeleteDepartment(department).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured in delete Enrollment", null);
+                _logger.LogError(ex, "Error Occured in delete Department", null);
                 throw;
             }
         }
