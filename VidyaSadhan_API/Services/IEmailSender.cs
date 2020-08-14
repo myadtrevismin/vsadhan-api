@@ -9,5 +9,6 @@ namespace VidyaSadhan_API.Services
     public interface IEmailSender
     {
         Task SendEmailAsync(EmailMessage message);
+        Task SendSmsAsync(string number, string message);
     }
 }

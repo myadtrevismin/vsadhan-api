@@ -91,6 +91,7 @@ namespace VidyaSadhan_API.Extensions
         public DbSet<AcademicType> AcademicTypes { get; set; }
         public DbSet<CourseSubject> CourseSubjects { get; set; }
         public DbSet<Demo> Demos { get; set; }
+        public DbSet<Attendance> Attendances { get; set; }
 
     }
 }
