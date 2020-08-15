@@ -131,6 +131,9 @@ namespace VidyaSadhan_API.Services
                 var Instructor = IsUserExist.Instructors.FirstOrDefault(x => x.UserId == IsUserExist.Id);
                 InstructorMapping(Account, Instructor);
 
+                var Student = IsUserExist.Students.FirstOrDefault(x => x.UserId == IsUserExist.Id);
+                StudentMapping(Account, Student);
+
                 UpdateAddressSection(Account, IsUserExist);
                 _identityContext.Users.Update(IsUserExist);
                 var result = await _identityContext.SaveChangesAsync();
@@ -179,7 +182,7 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        private static void InstructorMapping(AccountRequestViewModel Account, Instructor Instructor)
+        private  void InstructorMapping(AccountRequestViewModel Account, Instructor Instructor)
         {
             if (Instructor != null)
             {
@@ -201,6 +204,19 @@ namespace VidyaSadhan_API.Services
                 Instructor.PreferredTimeSlot = Account.Instructor.PreferredTimeSlot;
                 Instructor.ProfessionalDescription = Account.Instructor.ProfessionalDescription;
                 Instructor.Subjects = Account.Instructor.Subjects;
+            }
+        }
+
+        private  void StudentMapping(AccountRequestViewModel Account, Student Student)
+        {
+            if (Student != null)
+            {
+                Student.AcademyTypeId = Account.Student.AcademyTypeId;
+                Student.Board = Account.Student.Board;
+                Student.Medium = Account.Student.Medium;
+                Student.Intersets = Account.Student.Intersets;
+                Student.Level = Account.Student.Level;
+                Student.Subjects = Account.Student.Subjects;
             }
         }
 
@@ -440,7 +456,7 @@ namespace VidyaSadhan_API.Services
         {
             try
             {
-                var userdata = _identityContext.Users.Include("Addresses").Include("Instructors").SingleOrDefault(x => x.Id == user);
+                var userdata = _identityContext.Users.Include("Addresses").Include("Instructors").Include("Students").SingleOrDefault(x => x.Id == user);
                 return new AccountRequestViewModel
                 {
                     Address = userdata.Addresses?.Any(x => x.AddressType == "1") == true ?
@@ -451,6 +467,7 @@ namespace VidyaSadhan_API.Services
                     lastName = userdata.LastName,
                     Gender = userdata.Sex,
                     Instructor = _map.Map<InstructorViewModel>(userdata.Instructors.FirstOrDefault()),
+                    Student = _map.Map<StudentViewModel>(userdata.Students.FirstOrDefault()),
                     Phone = userdata.PhoneNumber,
                     ProfilePic = userdata.ProfilePic
                 };

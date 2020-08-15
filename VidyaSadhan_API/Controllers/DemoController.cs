@@ -97,6 +97,40 @@ namespace VidyaSadhan_API.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("request")]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> CreateDemoRequest([FromBody] RequestViewModel demo)
+        {
+            try
+            {
+                return Ok(await _DemoService.RequestDemo(demo).ConfigureAwait(false));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in save Demo", null);
+                throw;
+            }
+        }
+
+        [HttpPost]
+        [Route("requests")]
+        [ProducesResponseType(typeof(IEnumerable<RequestViewModel>), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> GetDemoRequests([FromBody] RequestViewModel demo)
+        {
+            try
+            {
+                return Ok(await _DemoService.GetDemoRequestsByUser(demo).ConfigureAwait(false));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in save Demo", null);
+                throw;
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>

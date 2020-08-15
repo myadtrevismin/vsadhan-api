@@ -17,5 +17,7 @@ namespace VidyaSadhan_API.Models
         public AddressViewModel Address { get; set; }
 
         public InstructorViewModel Instructor { get; set; }
+
+        public StudentViewModel Student { get; set; }
     }
 }

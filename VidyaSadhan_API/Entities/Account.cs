@@ -45,6 +45,8 @@ namespace VidyaSadhan_API.Entities
         public ICollection<CourseAssignment> CourseAssignments { get; set; }
 
         public ICollection<Enrollment> Enrollments { get; set; }
+        //public ICollection<Request> Requests { get; set; }
+
 
         [JsonIgnore]
         public List<RefreshTokenSet> RefreshTokens { get; set; }

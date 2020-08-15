@@ -69,6 +69,8 @@ namespace VidyaSadhan_API.Extensions
             modelBuilder.Entity<Enrollment>().HasKey(c => c.EnrollementId);
             modelBuilder.Entity<CourseSubject>()
                .HasKey(c => new { c.CourseId, c.SubjectId });
+            //modelBuilder.Entity<Request>().HasOne(x => x.Tutor).WithMany(y => y.Requests).HasForeignKey(z => z.TutorId).HasForeignKey(a=> a.StudentId);
+            //modelBuilder.Entity<Request>().HasOne(x => x.Tutor).WithMany(y => y.Requests).HasForeignKey(z => z.TutorId).HasForeignKey(a => a.StudentId);
         }
 
         public DbSet<Course> Courses { get; set; }
@@ -91,6 +93,8 @@ namespace VidyaSadhan_API.Extensions
         public DbSet<AcademicType> AcademicTypes { get; set; }
         public DbSet<CourseSubject> CourseSubjects { get; set; }
         public DbSet<Demo> Demos { get; set; }
+        public DbSet<Request> Requests { get; set; }
+
 
     }
 }

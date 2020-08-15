@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VidyaSadhan_API.Extensions;
 
 namespace VidyaSadhan_API.Migrations
 {
     [DbContext(typeof(VSDbContext))]
-    partial class VSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200815033207_userdata")]
+    partial class userdata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -727,9 +729,6 @@ namespace VidyaSadhan_API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Level")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Medium")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Subjects")

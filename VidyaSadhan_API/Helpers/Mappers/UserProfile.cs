@@ -30,7 +30,8 @@ namespace VidyaSadhan_API.Helpers.Mappers
             CreateMap<CourseAssignment, CourseAssignmentViewModel>().ReverseMap();
             CreateMap<CourseViewModel, Entities.Course>().ReverseMap();
             CreateMap<AcademicTypeViewModel, AcademicType>().ReverseMap();
-            
+            CreateMap<RequestViewModel, Request>().ReverseMap();
+
             //CreateMap<UpdateModel, User>();
         }
     }

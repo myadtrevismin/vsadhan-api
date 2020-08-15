@@ -2,6 +2,7 @@
 using Google.Apis.Calendar.v3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -161,6 +162,48 @@ namespace VidyaSadhan_API.Services
             }
             catch (Exception)
             {
+                throw;
+            }
+        }
+
+        public async Task<int> RequestDemo(RequestViewModel request)
+        {
+            try
+            {
+                _dbContext.Requests.Add(_map.Map<Request>(request));
+                return await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                var exception = new VSException(ex.Message);
+                exception.Value = ex.StackTrace;
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<RequestViewModel>> GetDemoRequestsByUser(RequestViewModel request)
+        {
+            try
+            {
+                IEnumerable<RequestViewModel> requests = new List<RequestViewModel>();
+                if (!string.IsNullOrWhiteSpace(request.TutorId))
+                {
+                    requests = _map.Map<IEnumerable<RequestViewModel>>(await _dbContext.Requests.Include(x=> x.Tutor).Include(x=>x.Student)
+                        .Where(x => x.TutorId == request.TutorId).ToListAsync());
+                   
+                }
+                if (!string.IsNullOrWhiteSpace(request.StudentId))
+                {
+                    requests = _map.Map<IEnumerable<RequestViewModel>>(await _dbContext.Requests.Include(x => x.Tutor).Include(x => x.Student)
+                        .Where(x => x.StudentId == request.StudentId).ToListAsync());
+                }
+               
+                return requests;
+            }
+            catch (Exception ex)
+            {
+                var exception = new VSException(ex.Message);
+                exception.Value = ex.StackTrace;
                 throw;
             }
         }
