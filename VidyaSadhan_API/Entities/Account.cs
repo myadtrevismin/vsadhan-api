@@ -42,6 +42,7 @@ namespace VidyaSadhan_API.Entities
 
         public ICollection<Address> Addresses { get; set; }
 
+
         public ICollection<CourseAssignment> CourseAssignments { get; set; }
 
         public ICollection<Enrollment> Enrollments { get; set; }

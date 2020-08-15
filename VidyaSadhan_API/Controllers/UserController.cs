@@ -55,6 +55,28 @@ namespace VidyaSadhan_API.Controllers
             
         }
 
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("verifycode")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> MultiStepLogin(string email, string code)
+        {
+            try
+            {
+                var response = await _userService.VerifyToken(email,code).ConfigureAwait(false);
+                return Ok(response);
+            }
+            catch (VSException ex)
+            {
+                throw new VSException(ex.Message);
+            }
+        }
+        
         [HttpPost]
         [Route("logout")]
         [ProducesResponseType(typeof(bool), 200)]

@@ -7,6 +7,8 @@ using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using VidyaSadhan_API.Models;
 
@@ -16,11 +18,15 @@ namespace VidyaSadhan_API.Services
     {
         private readonly EmailSettings _emailSettings;
         private readonly IWebHostEnvironment _environment;
+        private readonly SMSoptions _smsOptions;
 
-        public EmailSender(IOptions<EmailSettings> emailSettings, IWebHostEnvironment environment)
+        public EmailSender(IOptions<EmailSettings> emailSettings, 
+            IWebHostEnvironment environment, 
+            IOptions<SMSoptions> smsOptions)
         {
             _environment = environment;
             _emailSettings = emailSettings.Value;
+            _smsOptions = smsOptions.Value;
         }
 
         public async Task SendEmailAsync(EmailMessage message)
@@ -65,6 +71,26 @@ namespace VidyaSadhan_API.Services
             catch (Exception ex)
             {
                 throw new InvalidOperationException(ex.Message);
+            }
+        }
+
+        public async Task SendSmsAsync(string number, string message)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(_smsOptions.SMSAccountUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("nl-NL"));
+
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                HttpResponseMessage response = await client.
+                    GetAsync(string.Format("/api.php?username={0}&password={1}to={2}&from={2}&message={3}",
+                    _smsOptions.SMSAccountIdentification,_smsOptions.SMSAccountPassword, number, _smsOptions.Sender, message));
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                }
             }
         }
     }

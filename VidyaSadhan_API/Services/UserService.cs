@@ -297,6 +297,7 @@ namespace VidyaSadhan_API.Services
                     var jwtToken = GenerateJwtToken(user);
                     var refreshToken = GenerateRefreshToken(login.IpAddress);
                     userexists.RefreshTokens.Add(refreshToken);
+                    await GenerateOTP(userexists);
                     _identityContext.Update(userexists);
                     _identityContext.SaveChanges();
                     return new AuthenticateResponseViewModel(user, jwtToken, refreshToken.Token);
@@ -614,6 +615,48 @@ namespace VidyaSadhan_API.Services
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
+        }
+
+        public async Task<string> GenerateOTP(Account user)
+        {
+            try
+            {
+                var providers = await _userManager.GetValidTwoFactorProvidersAsync(user);
+                if (!providers.Contains("Email"))
+                {
+                    throw new Exception();
+                }
+                var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email").ConfigureAwait(false);
+                await _emailSender.SendSmsAsync("8978151594", token).ConfigureAwait(false);
+                return token;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<bool> VerifyToken(string email, string code)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return false;
+            }
+           
+
+            var result = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", code);
+            if (result)
+            {
+                return true;
+            }
+            else
+            {
+                var exception = new VSException("Invalid Login Attempt ");
+                exception.Value = "Invalid Login Attempt "; 
+                throw exception;
+            }
         }
     }
 

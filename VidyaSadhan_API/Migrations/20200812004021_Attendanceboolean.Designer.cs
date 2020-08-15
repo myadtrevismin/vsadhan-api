@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VidyaSadhan_API.Extensions;
 
 namespace VidyaSadhan_API.Migrations
 {
     [DbContext(typeof(VSDbContext))]
-    partial class VSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200812004021_Attendanceboolean")]
+    partial class Attendanceboolean
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -694,40 +696,6 @@ namespace VidyaSadhan_API.Migrations
                     b.ToTable("Questionnaire");
                 });
 
-            modelBuilder.Entity("VidyaSadhan_API.Entities.Request", b =>
-                {
-                    b.Property<int>("RequestId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Slot")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StudentId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Subject")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TutorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("RequestId");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("TutorId");
-
-                    b.ToTable("Requests");
-                });
-
             modelBuilder.Entity("VidyaSadhan_API.Entities.State", b =>
                 {
                     b.Property<string>("StateCd")
@@ -748,30 +716,7 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("AcademicTypeAcademyTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AcademyTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Board")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Intersets")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Level")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Medium")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Subjects")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("UserId");
-
-                    b.HasIndex("AcademicTypeAcademyTypeId");
 
                     b.ToTable("Student");
                 });
@@ -1026,23 +971,8 @@ namespace VidyaSadhan_API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VidyaSadhan_API.Entities.Request", b =>
-                {
-                    b.HasOne("VidyaSadhan_API.Entities.Account", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId");
-
-                    b.HasOne("VidyaSadhan_API.Entities.Account", "Tutor")
-                        .WithMany()
-                        .HasForeignKey("TutorId");
-                });
-
             modelBuilder.Entity("VidyaSadhan_API.Entities.Student", b =>
                 {
-                    b.HasOne("VidyaSadhan_API.Entities.AcademicType", "AcademicType")
-                        .WithMany()
-                        .HasForeignKey("AcademicTypeAcademyTypeId");
-
                     b.HasOne("VidyaSadhan_API.Entities.Account", "Account")
                         .WithMany("Students")
                         .HasForeignKey("UserId")
