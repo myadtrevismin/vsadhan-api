@@ -155,6 +155,7 @@ namespace VidyaSadhan_API
 
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
             services.Configure<SMSoptions>(Configuration.GetSection("SMSoptions"));
+            services.Configure<BrainCertOptions>(Configuration.GetSection("BrainCert"));
 
             services.AddTransient<UserService>();
             services.AddSingleton<IEmailSender, EmailSender>();
@@ -167,6 +168,7 @@ namespace VidyaSadhan_API
             services.AddScoped<ICalendarService, CalenderService>();
             services.AddScoped<StaticService>();
             services.AddTransient<AttendanceService>();
+            services.AddTransient<BrainCertService>();
             services.AddSwaggerDocument();
             //services.AddSwaggerGen(c =>
             //{

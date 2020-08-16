@@ -85,7 +85,7 @@ namespace VidyaSadhan_API.Services
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 HttpResponseMessage response = await client.
-                    GetAsync(string.Format("/api.php?username={0}&password={1}to={2}&from={2}&message={3}",
+                    GetAsync(string.Format("api.php?username={0}&password={1}&to={2}&from={3}&message={4}",
                     _smsOptions.SMSAccountIdentification,_smsOptions.SMSAccountPassword, number, _smsOptions.Sender, message));
                 if (response.IsSuccessStatusCode)
                 {
