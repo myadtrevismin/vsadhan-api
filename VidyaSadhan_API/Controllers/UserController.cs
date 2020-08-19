@@ -175,8 +175,41 @@ namespace VidyaSadhan_API.Controllers
             {
                 _logger.LogError(ex,"Error Occured in users",null);
                 throw;
+            }       
+        }
+
+        [HttpGet]
+        [Route("students")]
+        [ProducesResponseType(typeof(IEnumerable<AccountViewModel>), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public IActionResult GetAllStudents()
+        {
+            try
+            {
+                return Ok(_userService.GetAllStudents());
             }
-            
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in users", null);
+                throw;
+            }
+        }
+
+        [HttpGet]
+        [Route("tutors")]
+        [ProducesResponseType(typeof(IEnumerable<AccountViewModel>), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public IActionResult GetAllTutors()
+        {
+            try
+            {
+                return Ok(_userService.GetAllTutors());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in users", null);
+                throw;
+            }
         }
 
         [HttpPut]

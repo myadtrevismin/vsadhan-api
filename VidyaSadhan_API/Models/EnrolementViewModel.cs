@@ -14,7 +14,6 @@ namespace VidyaSadhan_API.Models
 
         public Status Status { get; set; }
 
-        [JsonIgnore]
         public CourseViewModel Course { get; set; }
         public string StudentID { get; set; }
         public Grade? Grade { get; set; }

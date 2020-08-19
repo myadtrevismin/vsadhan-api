@@ -156,6 +156,7 @@ namespace VidyaSadhan_API
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
             services.Configure<SMSoptions>(Configuration.GetSection("SMSoptions"));
             services.Configure<BrainCertOptions>(Configuration.GetSection("BrainCert"));
+            services.Configure<AzureConnections>(Configuration.GetSection("Azure"));
 
             services.AddTransient<UserService>();
             services.AddSingleton<IEmailSender, EmailSender>();

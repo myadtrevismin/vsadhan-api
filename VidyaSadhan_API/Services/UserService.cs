@@ -438,6 +438,50 @@ namespace VidyaSadhan_API.Services
             }
         }
 
+        public IEnumerable<AccountViewModel> GetAllTutors()
+        {
+            try
+            {
+                _logger.LogInformation("User Info", _identityContext);
+                var results = _map.Map<IEnumerable<AccountViewModel>>(_identityContext.Users.Include(x=> x.CourseAssignments).Where(x=>x.Role == UserRoles.Tutor));
+                foreach(var tutor in results)
+                {
+                    foreach (var assignment in tutor.CourseAssignments)
+                    {
+                        assignment.Course = _map.Map<CourseViewModel>(_identityContext.Courses.FirstOrDefault(x => x.CourseId == assignment.CourseId));
+                    }                  
+                }
+                return results;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("UserError", ex);
+                throw new VSException("Unable to load Users", ex);
+            }
+        }
+
+        public IEnumerable<AccountViewModel> GetAllStudents()
+        {
+            try
+            {
+                _logger.LogInformation("User Info", _identityContext);
+                var results = _map.Map<IEnumerable<AccountViewModel>>(_identityContext.Users.Include(x => x.Enrollments).Where(x => x.Role == UserRoles.Student));
+                foreach (var student in results)
+                {
+                    foreach (var assignment in student.Enrollments)
+                    {
+                        assignment.Course = _map.Map<CourseViewModel>(_identityContext.Courses.FirstOrDefault(x => x.CourseId == assignment.CourseId));
+                    }
+                }
+                return results;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("UserError", ex);
+                throw new VSException("Unable to load Users", ex);
+            }
+        }
+
         public AccountViewModel GetUserById(string user)
         {
             try

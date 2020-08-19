@@ -43,13 +43,17 @@ namespace VidyaSadhan_API.Services
 
         public async Task<int> UpdateEnrollment(EnrolementViewModel enrollment)
         {
-            var enrollmentselected = _dbContext.Enrollments.FirstOrDefault(x => x.EnrollementId == enrollment.EnrollementId);
-            if(enrollmentselected != null)
+            var enrollmentselected = _dbContext.Enrollments.FirstOrDefault(x => x.CourseId == enrollment.CourseId && x.StudentID == enrollment.StudentID);
+            if(enrollmentselected == null)
+            {
+                _dbContext.Enrollments.Add(_map.Map<Enrollment>(enrollment));                             
+            }
+            else
             {
                 enrollmentselected.Status = enrollment.Status;
-                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
-            return 0;
+
+            return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
 
