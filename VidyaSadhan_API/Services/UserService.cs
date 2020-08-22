@@ -127,6 +127,11 @@ namespace VidyaSadhan_API.Services
 
                 IsUserExist.Sex = Account.Gender;
                 IsUserExist.DateOfBirth = Account.Birthdate;
+                IsUserExist.ProfilePic = Account.ProfilePic;
+                IsUserExist.NaCategory = Account.NaCategory;
+                IsUserExist.NaSubCategory = Account.NaSubCategory;
+                IsUserExist.AgeGroup = Account.AgeGroup;
+                IsUserExist.Certification = Account.Certification;
 
                 var Instructor = IsUserExist.Instructors.FirstOrDefault(x => x.UserId == IsUserExist.Id);
                 InstructorMapping(Account, Instructor);
@@ -137,7 +142,7 @@ namespace VidyaSadhan_API.Services
                 UpdateAddressSection(Account, IsUserExist);
                 _identityContext.Users.Update(IsUserExist);
                 var result = await _identityContext.SaveChangesAsync();
-                if (result == 3)
+                if (result >= 0)
                 {
                     return true;
                 }
@@ -514,7 +519,11 @@ namespace VidyaSadhan_API.Services
                     Instructor = _map.Map<InstructorViewModel>(userdata.Instructors.FirstOrDefault()),
                     Student = _map.Map<StudentViewModel>(userdata.Students.FirstOrDefault()),
                     Phone = userdata.PhoneNumber,
-                    ProfilePic = userdata.ProfilePic
+                    ProfilePic = userdata.ProfilePic,
+                    NaCategory = userdata.NaCategory,
+                    NaSubCategory = userdata.NaSubCategory,
+                    Certification = userdata.Certification,
+                    AgeGroup = userdata.AgeGroup,
                 };
             }
             catch (Exception ex)

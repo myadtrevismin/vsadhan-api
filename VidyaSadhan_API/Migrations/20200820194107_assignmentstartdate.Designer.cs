@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VidyaSadhan_API.Extensions;
 
 namespace VidyaSadhan_API.Migrations
 {
     [DbContext(typeof(VSDbContext))]
-    partial class VSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200820194107_assignmentstartdate")]
+    partial class assignmentstartdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,9 +356,6 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<string>("Instructions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("InstructorId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Points")
                         .HasColumnType("nvarchar(max)");
 
@@ -376,8 +375,6 @@ namespace VidyaSadhan_API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AssignmentId");
-
-                    b.HasIndex("InstructorId");
 
                     b.ToTable("Assignments");
                 });
@@ -1002,13 +999,6 @@ namespace VidyaSadhan_API.Migrations
                     b.HasOne("VidyaSadhan_API.Entities.Account", "Account")
                         .WithMany("Addresses")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("VidyaSadhan_API.Entities.Assignment", b =>
-                {
-                    b.HasOne("VidyaSadhan_API.Entities.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("InstructorId");
                 });
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.Attendance", b =>

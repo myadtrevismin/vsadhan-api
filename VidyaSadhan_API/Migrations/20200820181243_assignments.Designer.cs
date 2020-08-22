@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VidyaSadhan_API.Extensions;
 
 namespace VidyaSadhan_API.Migrations
 {
     [DbContext(typeof(VSDbContext))]
-    partial class VSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200820181243_assignments")]
+    partial class assignments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,56 +332,6 @@ namespace VidyaSadhan_API.Migrations
                     b.HasKey("TypeId");
 
                     b.ToTable("AddressType");
-                });
-
-            modelBuilder.Entity("VidyaSadhan_API.Entities.Assignment", b =>
-                {
-                    b.Property<int>("AssignmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AssignmentFile")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CourseId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Grade")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Instructions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InstructorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Points")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("QuestionSetId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Subject")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Topic")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("AssignmentId");
-
-                    b.HasIndex("InstructorId");
-
-                    b.ToTable("Assignments");
                 });
 
             modelBuilder.Entity("VidyaSadhan_API.Entities.Attendance", b =>
@@ -838,21 +790,6 @@ namespace VidyaSadhan_API.Migrations
                     b.ToTable("Student");
                 });
 
-            modelBuilder.Entity("VidyaSadhan_API.Entities.StudentAssignment", b =>
-                {
-                    b.Property<int>("AssignmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("AssignmentId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("StudentAssignments");
-                });
-
             modelBuilder.Entity("VidyaSadhan_API.Entities.Subject", b =>
                 {
                     b.Property<int>("SubjectId")
@@ -1004,13 +941,6 @@ namespace VidyaSadhan_API.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("VidyaSadhan_API.Entities.Assignment", b =>
-                {
-                    b.HasOne("VidyaSadhan_API.Entities.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("InstructorId");
-                });
-
             modelBuilder.Entity("VidyaSadhan_API.Entities.Attendance", b =>
                 {
                     b.HasOne("VidyaSadhan_API.Entities.Course", "Course")
@@ -1129,21 +1059,6 @@ namespace VidyaSadhan_API.Migrations
 
                     b.HasOne("VidyaSadhan_API.Entities.Account", "Account")
                         .WithMany("Students")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("VidyaSadhan_API.Entities.StudentAssignment", b =>
-                {
-                    b.HasOne("VidyaSadhan_API.Entities.Assignment", "Assignment")
-                        .WithMany("StudentAssignments")
-                        .HasForeignKey("AssignmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("VidyaSadhan_API.Entities.Account", "Account")
-                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

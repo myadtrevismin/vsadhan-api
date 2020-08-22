@@ -170,6 +170,7 @@ namespace VidyaSadhan_API
             services.AddScoped<StaticService>();
             services.AddTransient<AttendanceService>();
             services.AddTransient<BrainCertService>();
+            services.AddTransient<AssignmentService>();
             services.AddSwaggerDocument();
             //services.AddSwaggerGen(c =>
             //{

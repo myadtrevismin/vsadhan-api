@@ -36,6 +36,13 @@ namespace VidyaSadhan_API.Entities
 
         public string ProfilePic { get; set; }
 
+        public string NaCategory { get; set; }
+
+        public string NaSubCategory { get; set; }
+
+        public string AgeGroup { get; set; }
+        public string Certification { get; set; }
+
         public ICollection<Instructor> Instructors { get; set; }
 
         public ICollection<Student> Students { get; set; }

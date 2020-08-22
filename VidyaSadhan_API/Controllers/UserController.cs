@@ -216,11 +216,11 @@ namespace VidyaSadhan_API.Controllers
         [Route("update")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
-        public IActionResult UpdateUser(AccountRequestViewModel Account)
+        public async Task<IActionResult> UpdateUser(AccountRequestViewModel Account)
         {
             try
             {
-                return Ok(_userService.UpdateUser(Account));
+                return Ok(await _userService.UpdateUser(Account).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
