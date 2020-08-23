@@ -11,6 +11,12 @@ namespace VidyaSadhan_API.Models
         public int Id { get; set; }
         public string UserId { get; set; }
 
+        public int ClassCount { get; set; }
+
+        public decimal TotalPayment { get; set; }
+
+        public string Status { get; set; }
+
         [JsonIgnore]
         public CourseViewModel Course { get; set; }
 

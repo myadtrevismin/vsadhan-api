@@ -42,6 +42,30 @@ namespace VidyaSadhan_API.Services
             }
         }
 
+        public async Task<IEnumerable<AttendanceViewModel>> GetAttendanceByTutor(string id)
+        {
+            try
+            {
+                var attendances = await _dbContext.Attendances.Include(x => x.Course).Include(x => x.User)?.Where(x => x.Course.CourseAssignments.Any(y=> y.InstructorId == id)).ToListAsync();
+                var attendanceView = _map.Map<List<AttendanceViewModel>>(attendances);
+                if (attendanceView.Any())
+                {
+                    attendanceView.GroupBy(x => x.UserId).Select(y => new AttendanceViewModel
+                    {
+                        Name = y.First().User.LastName + " " + y.First().User.FirstName,
+                        Course = y.First().Course,
+                        Address = y.First().Course.LocationName,
+                        TotalPayment = y.Sum(x => x.TotalPayment),
+                    });
+                }            
+                return attendanceView;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
         public async Task<int> Save(IEnumerable<AttendanceViewModel> attendances)
         {

@@ -14,6 +14,7 @@ namespace VidyaSadhan_API.Models
 
         public int AcademyTypeId { get; set; }
         public AcademicTypeViewModel AcademicType { get; set; }
+        public string Name { get; set; }
         public string Subjects { get; set; }
 
         public string Medium { get; set; }

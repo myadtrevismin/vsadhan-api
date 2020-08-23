@@ -42,6 +42,16 @@ namespace VidyaSadhan_API.Controllers
             return Ok(await _attendanceService.GetAttendanceByCourse(id).ConfigureAwait(false));
         }
 
+        [HttpGet]
+        [Route("bytutor")]
+        [ProducesResponseType(typeof(IEnumerable<AttendanceViewModel>), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> GetAttendancesByTutor(string id)
+        {
+            return Ok(await _attendanceService.GetAttendanceByTutor(id).ConfigureAwait(false));
+        }
+
+
         // POST api/<AttendanceController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] IEnumerable<AttendanceViewModel> value)

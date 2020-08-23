@@ -34,6 +34,25 @@ namespace VidyaSadhan_API.Services
             return _map.Map<StudentViewModel>(instructor);
         }
 
+        public async Task<IEnumerable<EnrolementViewModel>> GetStudentsByTutorId(string UserId)
+        {
+            var enrollments = await _dbContext.Enrollments.Include(y=> y.Course).Include(y=> y.Student).Where(i => i.Course.CourseAssignments.Any(y=> y.InstructorId == UserId)).ToListAsync(); 
+            var studentView = _map.Map<IEnumerable<EnrolementViewModel>>(enrollments);
+            var resultset = studentView.GroupBy(y => new { y.StudentID, y.CourseId }).Select(x => new EnrolementViewModel
+            {
+                Name = x.First().Student.FirstName + " " + x.First().Student.LastName,
+                Student = x.First().Student,
+                StudentID = x.Key.StudentID,
+                CourseId = x.Key.CourseId,
+                Course = x.First().Course,
+                ClassCount = x.Count(),
+                PaymentAmount = x.Sum(a=> a.PaymentAmount),
+                Status = x.First().Status,
+                PaymentStatus = "Pending",
+            });
+            return resultset;
+        }
+
 
         public async Task<int> SaveStudent(StudentViewModel instructor)
         {
