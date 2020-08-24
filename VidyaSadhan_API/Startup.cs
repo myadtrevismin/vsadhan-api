@@ -75,6 +75,12 @@ namespace VidyaSadhan_API
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.Tokens.AuthenticatorTokenProvider = "VSadhan";
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 0;
             }).AddEntityFrameworkStores<VSDbContext>().AddDefaultTokenProviders();
 
             services.AddTransient<ICourseService, CourseService>();

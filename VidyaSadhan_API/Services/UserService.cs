@@ -293,6 +293,13 @@ namespace VidyaSadhan_API.Services
                     throw exception;
                 }
 
+                if (!userexists.EmailConfirmed)
+                {
+                    var exception = new VSException("Looks like Email is registered but not Confirmed. Please check your mail box");
+                    exception.Value = "Looks like Email is registered but not Confirmed. Please check your mail box";
+                    throw exception;
+                }
+
                 var results = await _signInManager.PasswordSignInAsync(userexists.UserName, login.Password, login.RememberMe, false).ConfigureAwait(false);
 
                 if (results.Succeeded)

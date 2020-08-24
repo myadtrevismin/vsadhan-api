@@ -42,7 +42,7 @@ namespace VidyaSadhan_API.Services
 
                 mimeMessage.Body = new TextPart("html")
                 {
-                    Text = message.Message
+                    Text = message.Message,
                 };
 
                 using (var client = new SmtpClient())

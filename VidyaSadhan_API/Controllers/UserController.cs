@@ -18,7 +18,7 @@ namespace VidyaSadhan_API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/users")]  
+    [Route("api/users")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
@@ -41,18 +41,10 @@ namespace VidyaSadhan_API.Controllers
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> AuthenticateUser([FromBody] LoginViewModel model)
         {
-            try
-            {
-                model.IpAddress = GetIPAddress();
-                var response = await _userService.Login(model).ConfigureAwait(false);
-                SetTokenCookie(response.RefreshToken);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                throw new VSException(ex.StackTrace,ex);
-            }
-            
+            model.IpAddress = GetIPAddress();
+            var response = await _userService.Login(model).ConfigureAwait(false);
+            SetTokenCookie(response.RefreshToken);
+            return Ok(response);
         }
 
 
@@ -68,7 +60,7 @@ namespace VidyaSadhan_API.Controllers
         {
             try
             {
-                var response = await _userService.VerifyToken(email,code).ConfigureAwait(false);
+                var response = await _userService.VerifyToken(email, code).ConfigureAwait(false);
                 return Ok(response);
             }
             catch (VSException ex)
@@ -76,7 +68,7 @@ namespace VidyaSadhan_API.Controllers
                 throw new VSException(ex.Message);
             }
         }
-        
+
         [HttpPost]
         [Route("logout")]
         [ProducesResponseType(typeof(bool), 200)]
@@ -106,7 +98,7 @@ namespace VidyaSadhan_API.Controllers
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Confirm(string userId, string token)
         {
-            return Ok(await _userService.ConfirmEmail(userId,token).ConfigureAwait(false));
+            return Ok(await _userService.ConfirmEmail(userId, token).ConfigureAwait(false));
         }
 
         [AllowAnonymous]
@@ -173,9 +165,9 @@ namespace VidyaSadhan_API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,"Error Occured in users",null);
+                _logger.LogError(ex, "Error Occured in users", null);
                 throw;
-            }       
+            }
         }
 
         [HttpGet]
@@ -254,7 +246,7 @@ namespace VidyaSadhan_API.Controllers
         [HttpPost]
         public async Task<IActionResult> Refresh(RevokTokenViewModel token)
         {
-           // var refreshToken = Request.Cookies["refreshToken"];
+            // var refreshToken = Request.Cookies["refreshToken"];
             var response = await _userService.RefreshToken(token.Token, GetIPAddress());
 
             if (response == null)
