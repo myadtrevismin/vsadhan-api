@@ -34,6 +34,25 @@ namespace VidyaSadhan_API.Services
             return _map.Map<StudentViewModel>(instructor);
         }
 
+        public async Task<IEnumerable<EnrolementViewModel>> GetStudentsByTutorId(string UserId)
+        {
+            var enrollments = await _dbContext.Enrollments.Include(y=> y.Course).Include(y=> y.Student).Where(i => i.Course.CourseAssignments.Any(y=> y.InstructorId == UserId)).ToListAsync(); 
+            var studentView = _map.Map<IEnumerable<EnrolementViewModel>>(enrollments);
+            var resultset = studentView.GroupBy(y => new { y.StudentID, y.CourseId }).Select(x => new EnrolementViewModel
+            {
+                Name = x.First().Student.FirstName + " " + x.First().Student.LastName,
+                Student = x.First().Student,
+                StudentID = x.Key.StudentID,
+                CourseId = x.Key.CourseId,
+                Course = x.First().Course,
+                ClassCount = x.Count(),
+                PaymentAmount = x.Sum(a=> a.PaymentAmount),
+                Status = x.First().Status,
+                PaymentStatus = "Pending",
+            });
+            return resultset;
+        }
+
 
         public async Task<int> SaveStudent(StudentViewModel instructor)
         {
@@ -43,13 +62,17 @@ namespace VidyaSadhan_API.Services
 
         public async Task<int> UpdateEnrollment(EnrolementViewModel enrollment)
         {
-            var enrollmentselected = _dbContext.Enrollments.FirstOrDefault(x => x.EnrollementId == enrollment.EnrollementId);
-            if(enrollmentselected != null)
+            var enrollmentselected = _dbContext.Enrollments.FirstOrDefault(x => x.CourseId == enrollment.CourseId && x.StudentID == enrollment.StudentID);
+            if(enrollmentselected == null)
+            {
+                _dbContext.Enrollments.Add(_map.Map<Enrollment>(enrollment));                             
+            }
+            else
             {
                 enrollmentselected.Status = enrollment.Status;
-                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
-            return 0;
+
+            return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
 

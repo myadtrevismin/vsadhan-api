@@ -2,6 +2,7 @@
 using Google.Apis.Calendar.v3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,8 +38,8 @@ namespace VidyaSadhan_API.Services
         {
             try
             {
-                // var result = await _dbContext.Demos.ToListAsync().ConfigureAwait(false);
-                return _map.Map<IEnumerable<DemoViewModel>>(null);
+                var result = await _dbContext.Demos.ToListAsync().ConfigureAwait(false);
+                return _map.Map<IEnumerable<DemoViewModel>>(result).OrderByDescending(x=>x.StartDate);
             }
             catch (Exception)
             {
@@ -50,8 +51,12 @@ namespace VidyaSadhan_API.Services
         {
             try
             {
-                var result = await _dbContext.Demos.FirstOrDefaultAsync(x => x.CourseId == demoId).ConfigureAwait(false);
-                return _map.Map<DemoViewModel>(null);
+                var result = _map.Map<DemoViewModel>(await _dbContext.Demos.Include(x=> x.Enrollments).ThenInclude(y=> y.Student).FirstOrDefaultAsync(x => x.CourseId == demoId).ConfigureAwait(false));
+                if(result != null)
+                {
+                    GetGoogleCalendarEvent(new List<DemoViewModel> { result });
+                }
+                return result;
             }
             catch (Exception)
             {
@@ -65,43 +70,47 @@ namespace VidyaSadhan_API.Services
             {
                 IEnumerable<Demo> demos = null;
                 var user = _userService.GetUserById(userId);
-                if(user.Role == UserRoles.Student)
+                if (user.Role == UserRoles.Student)
                 {
                     demos = await _dbContext.Demos.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
                         .Where(y => y.Enrollments.Any(z => z.StudentID == userId)).ToListAsync();
                 }
-                else if(user.Role == UserRoles.Tutor)
+                else if (user.Role == UserRoles.Tutor)
                 {
-                    demos =   await _dbContext.Demos.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
+                    demos = await _dbContext.Demos.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
                        .Where(y => y.CourseAssignments.Any(a => a.InstructorId == userId)).ToListAsync();
                 }
 
                 var resultView = _map.Map<IEnumerable<DemoViewModel>>(demos);
-                var events = GetCalendarEvents(_configsetting.AdminEmail);
-                foreach (var item in resultView)
-                {
-                    Event cEvent = events.Items.FirstOrDefault(x => x.Id == item.ExternalCourseId);
-                    if(cEvent != null)
-                    {
-                        item.CalendarEvent = new CalendarEvent
-                        {
-                            Location = cEvent.Location,
-                            Attendees = cEvent.Attendees.Select(x => x.Email),
-                            Description = cEvent.Description,
-                            Start = cEvent.Start.DateTime.Value,
-                            End = cEvent.End.DateTime.Value,
-                            Organizer = cEvent.Organizer.Email,
-                            Summary = cEvent.Organizer.DisplayName,
-                            VideoLink = cEvent.HangoutLink
-                        };
-                    }
-                   
-                }
-                return resultView;
+                GetGoogleCalendarEvent(resultView);
+                return resultView.OrderByDescending(x=>x.StartDate);
             }
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        private void GetGoogleCalendarEvent(IEnumerable<DemoViewModel> resultView)
+        {
+            var events = GetCalendarEvents(_configsetting.AdminEmail);
+            foreach (var item in resultView)
+            {
+                Event cEvent = events.Items.FirstOrDefault(x => x.Id == item.ExternalCourseId);
+                if (cEvent != null)
+                {
+                    item.CalendarEvent = new CalendarEvent
+                    {
+                        Location = cEvent.Location,
+                        Attendees = cEvent.Attendees.Select(x => x.Email),
+                        Description = cEvent.Description,
+                        Start = cEvent.Start.DateTime.Value,
+                        End = cEvent.End.DateTime.Value,
+                        Organizer = cEvent.Organizer.Email,
+                        Summary = cEvent.Organizer.DisplayName,
+                        VideoLink = cEvent.HangoutLink
+                    };
+                }
             }
         }
 
@@ -161,6 +170,49 @@ namespace VidyaSadhan_API.Services
             }
             catch (Exception)
             {
+                throw;
+            }
+        }
+
+        public async Task<int> RequestDemo(RequestViewModel request)
+        {
+            try
+            {
+                _dbContext.Requests.Add(_map.Map<Request>(request));
+                return await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                var exception = new VSException(ex.Message);
+                exception.Value = ex.StackTrace;
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<RequestViewModel>> GetDemoRequestsByUser(RequestViewModel request)
+        {
+            try
+            {
+                List<RequestViewModel> requests = new List<RequestViewModel>();
+                if (!string.IsNullOrWhiteSpace(request.TutorId))
+                {
+                    requests = _map.Map<List<RequestViewModel>>(await _dbContext.Requests.Include(x=> x.Tutor).Include(x=>x.Student)
+                        .Where(x => x.TutorId == request.TutorId).ToListAsync());
+                   
+                }
+                if (!string.IsNullOrWhiteSpace(request.StudentId))
+                {
+                    requests = _map.Map<List<RequestViewModel>>(await _dbContext.Requests.Include(x => x.Tutor).Include(x => x.Student)
+                        .Where(x => x.StudentId == request.StudentId).ToListAsync());
+                }
+                requests.ForEach(x => { x.Status = _dbContext.Enrollments?.Any(y => y.CourseId == x.Slot && y.StudentID == x.StudentId) == false ? Status.Request : _dbContext.Enrollments.FirstOrDefault(y => y.CourseId == x.Slot && y.StudentID == x.StudentId).Status; });
+
+                return requests;
+            }
+            catch (Exception ex)
+            {
+                var exception = new VSException(ex.Message);
+                exception.Value = ex.StackTrace;
                 throw;
             }
         }

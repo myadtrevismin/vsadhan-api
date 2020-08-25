@@ -75,11 +75,18 @@ namespace VidyaSadhan_API
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.Tokens.AuthenticatorTokenProvider = "VSadhan";
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 0;
             }).AddEntityFrameworkStores<VSDbContext>().AddDefaultTokenProviders();
 
             services.AddTransient<ICourseService, CourseService>();
 
             services.Configure<ConfigSettings>(Configuration.GetSection("Secrets"));
+         
 
             var vapidDetails = new VapidDetails(
                Configuration.GetValue<string>("VapidDetails:Subject"),
@@ -153,10 +160,12 @@ namespace VidyaSadhan_API
             //});
 
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
+            services.Configure<SMSoptions>(Configuration.GetSection("SMSoptions"));
+            services.Configure<BrainCertOptions>(Configuration.GetSection("BrainCert"));
+            services.Configure<AzureConnections>(Configuration.GetSection("Azure"));
 
-
-            services.AddSingleton<IEmailSender, EmailSender>();
             services.AddTransient<UserService>();
+            services.AddSingleton<IEmailSender, EmailSender>();
             services.AddTransient<InstructorService>();
             services.AddTransient<StudentService>();
             services.AddTransient<AddressService>();
@@ -167,6 +176,9 @@ namespace VidyaSadhan_API
             services.AddTransient<DepartmentService>();
             services.AddScoped<ICalendarService, CalenderService>();
             services.AddScoped<StaticService>();
+            services.AddTransient<AttendanceService>();
+            services.AddTransient<BrainCertService>();
+            services.AddTransient<AssignmentService>();
             services.AddSwaggerDocument();
             //services.AddSwaggerGen(c =>
             //{

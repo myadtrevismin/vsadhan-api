@@ -41,6 +41,14 @@ namespace VidyaSadhan_API.Controllers
             return Ok(await _studentService.GetStudentById(userid));
         }
 
+        [HttpGet("bytutor")]
+        [ProducesResponseType(typeof(StudentViewModel), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> GetStudentsByTutor(string tutorId)
+        {
+            return Ok(await _studentService.GetStudentsByTutorId(tutorId));
+        }
+
         [HttpPut("enrollment")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesErrorResponseType(typeof(VSException))]

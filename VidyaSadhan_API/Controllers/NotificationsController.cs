@@ -69,5 +69,21 @@ namespace VidyaSadhan_API.Controllers
             }
            
         }
+
+        [HttpGet("message")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public IActionResult SendMessage(string number,string message)
+        {
+            try
+            {
+                _emailSender.SendSmsAsync(number,message);
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
+        }
     }
 }

@@ -127,14 +127,22 @@ namespace VidyaSadhan_API.Services
 
                 IsUserExist.Sex = Account.Gender;
                 IsUserExist.DateOfBirth = Account.Birthdate;
+                IsUserExist.ProfilePic = Account.ProfilePic;
+                IsUserExist.NaCategory = Account.NaCategory;
+                IsUserExist.NaSubCategory = Account.NaSubCategory;
+                IsUserExist.AgeGroup = Account.AgeGroup;
+                IsUserExist.Certification = Account.Certification;
 
                 var Instructor = IsUserExist.Instructors.FirstOrDefault(x => x.UserId == IsUserExist.Id);
                 InstructorMapping(Account, Instructor);
 
+                var Student = IsUserExist.Students.FirstOrDefault(x => x.UserId == IsUserExist.Id);
+                StudentMapping(Account, Student);
+
                 UpdateAddressSection(Account, IsUserExist);
                 _identityContext.Users.Update(IsUserExist);
                 var result = await _identityContext.SaveChangesAsync();
-                if (result == 3)
+                if (result >= 0)
                 {
                     return true;
                 }
@@ -179,7 +187,7 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        private static void InstructorMapping(AccountRequestViewModel Account, Instructor Instructor)
+        private  void InstructorMapping(AccountRequestViewModel Account, Instructor Instructor)
         {
             if (Instructor != null)
             {
@@ -201,6 +209,19 @@ namespace VidyaSadhan_API.Services
                 Instructor.PreferredTimeSlot = Account.Instructor.PreferredTimeSlot;
                 Instructor.ProfessionalDescription = Account.Instructor.ProfessionalDescription;
                 Instructor.Subjects = Account.Instructor.Subjects;
+            }
+        }
+
+        private  void StudentMapping(AccountRequestViewModel Account, Student Student)
+        {
+            if (Student != null)
+            {
+                Student.AcademyTypeId = Account.Student.AcademyTypeId;
+                Student.Board = Account.Student.Board;
+                Student.Medium = Account.Student.Medium;
+                Student.Intersets = Account.Student.Intersets;
+                Student.Level = Account.Student.Level;
+                Student.Subjects = Account.Student.Subjects;
             }
         }
 
@@ -272,6 +293,13 @@ namespace VidyaSadhan_API.Services
                     throw exception;
                 }
 
+                if (!userexists.EmailConfirmed)
+                {
+                    var exception = new VSException("Looks like Email is registered but not Confirmed. Please check your mail box");
+                    exception.Value = "Looks like Email is registered but not Confirmed. Please check your mail box";
+                    throw exception;
+                }
+
                 var results = await _signInManager.PasswordSignInAsync(userexists.UserName, login.Password, login.RememberMe, false).ConfigureAwait(false);
 
                 if (results.Succeeded)
@@ -281,6 +309,7 @@ namespace VidyaSadhan_API.Services
                     var jwtToken = GenerateJwtToken(user);
                     var refreshToken = GenerateRefreshToken(login.IpAddress);
                     userexists.RefreshTokens.Add(refreshToken);
+                    await GenerateOTP(userexists);
                     _identityContext.Update(userexists);
                     _identityContext.SaveChanges();
                     return new AuthenticateResponseViewModel(user, jwtToken, refreshToken.Token);
@@ -421,6 +450,50 @@ namespace VidyaSadhan_API.Services
             }
         }
 
+        public IEnumerable<AccountViewModel> GetAllTutors()
+        {
+            try
+            {
+                _logger.LogInformation("User Info", _identityContext);
+                var results = _map.Map<IEnumerable<AccountViewModel>>(_identityContext.Users.Include(x=> x.CourseAssignments).Where(x=>x.Role == UserRoles.Tutor));
+                foreach(var tutor in results)
+                {
+                    foreach (var assignment in tutor.CourseAssignments)
+                    {
+                        assignment.Course = _map.Map<CourseViewModel>(_identityContext.Courses.FirstOrDefault(x => x.CourseId == assignment.CourseId));
+                    }                  
+                }
+                return results;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("UserError", ex);
+                throw new VSException("Unable to load Users", ex);
+            }
+        }
+
+        public IEnumerable<AccountViewModel> GetAllStudents()
+        {
+            try
+            {
+                _logger.LogInformation("User Info", _identityContext);
+                var results = _map.Map<IEnumerable<AccountViewModel>>(_identityContext.Users.Include(x => x.Enrollments).Where(x => x.Role == UserRoles.Student));
+                foreach (var student in results)
+                {
+                    foreach (var assignment in student.Enrollments)
+                    {
+                        assignment.Course = _map.Map<CourseViewModel>(_identityContext.Courses.FirstOrDefault(x => x.CourseId == assignment.CourseId));
+                    }
+                }
+                return results;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("UserError", ex);
+                throw new VSException("Unable to load Users", ex);
+            }
+        }
+
         public AccountViewModel GetUserById(string user)
         {
             try
@@ -440,7 +513,7 @@ namespace VidyaSadhan_API.Services
         {
             try
             {
-                var userdata = _identityContext.Users.Include("Addresses").Include("Instructors").SingleOrDefault(x => x.Id == user);
+                var userdata = _identityContext.Users.Include("Addresses").Include("Instructors").Include("Students").SingleOrDefault(x => x.Id == user);
                 return new AccountRequestViewModel
                 {
                     Address = userdata.Addresses?.Any(x => x.AddressType == "1") == true ?
@@ -451,8 +524,13 @@ namespace VidyaSadhan_API.Services
                     lastName = userdata.LastName,
                     Gender = userdata.Sex,
                     Instructor = _map.Map<InstructorViewModel>(userdata.Instructors.FirstOrDefault()),
+                    Student = _map.Map<StudentViewModel>(userdata.Students.FirstOrDefault()),
                     Phone = userdata.PhoneNumber,
-                    ProfilePic = userdata.ProfilePic
+                    ProfilePic = userdata.ProfilePic,
+                    NaCategory = userdata.NaCategory,
+                    NaSubCategory = userdata.NaSubCategory,
+                    Certification = userdata.Certification,
+                    AgeGroup = userdata.AgeGroup,
                 };
             }
             catch (Exception ex)
@@ -597,6 +675,48 @@ namespace VidyaSadhan_API.Services
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
+        }
+
+        public async Task<string> GenerateOTP(Account user)
+        {
+            try
+            {
+                var providers = await _userManager.GetValidTwoFactorProvidersAsync(user);
+                if (!providers.Contains("Email"))
+                {
+                    throw new Exception();
+                }
+                var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email").ConfigureAwait(false);
+                await _emailSender.SendSmsAsync(user.PhoneNumber, token).ConfigureAwait(false);
+                return token;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<bool> VerifyToken(string email, string code)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return false;
+            }
+           
+
+            var result = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", code);
+            if (result)
+            {
+                return true;
+            }
+            else
+            {
+                var exception = new VSException("Invalid Login Attempt ");
+                exception.Value = "Invalid Login Attempt "; 
+                throw exception;
+            }
         }
     }
 

@@ -18,7 +18,7 @@ namespace VidyaSadhan_API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/users")]  
+    [Route("api/users")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
@@ -41,18 +41,32 @@ namespace VidyaSadhan_API.Controllers
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> AuthenticateUser([FromBody] LoginViewModel model)
         {
+            model.IpAddress = GetIPAddress();
+            var response = await _userService.Login(model).ConfigureAwait(false);
+            SetTokenCookie(response.RefreshToken);
+            return Ok(response);
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("verifycode")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> MultiStepLogin(string email, string code)
+        {
             try
             {
-                model.IpAddress = GetIPAddress();
-                var response = await _userService.Login(model).ConfigureAwait(false);
-                SetTokenCookie(response.RefreshToken);
+                var response = await _userService.VerifyToken(email, code).ConfigureAwait(false);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (VSException ex)
             {
-                throw new VSException(ex.StackTrace,ex);
+                throw new VSException(ex.Message);
             }
-            
         }
 
         [HttpPost]
@@ -84,7 +98,7 @@ namespace VidyaSadhan_API.Controllers
         [ProducesErrorResponseType(typeof(VSException))]
         public async Task<IActionResult> Confirm(string userId, string token)
         {
-            return Ok(await _userService.ConfirmEmail(userId,token).ConfigureAwait(false));
+            return Ok(await _userService.ConfirmEmail(userId, token).ConfigureAwait(false));
         }
 
         [AllowAnonymous]
@@ -151,21 +165,54 @@ namespace VidyaSadhan_API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,"Error Occured in users",null);
+                _logger.LogError(ex, "Error Occured in users", null);
                 throw;
             }
-            
+        }
+
+        [HttpGet]
+        [Route("students")]
+        [ProducesResponseType(typeof(IEnumerable<AccountViewModel>), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public IActionResult GetAllStudents()
+        {
+            try
+            {
+                return Ok(_userService.GetAllStudents());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in users", null);
+                throw;
+            }
+        }
+
+        [HttpGet]
+        [Route("tutors")]
+        [ProducesResponseType(typeof(IEnumerable<AccountViewModel>), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public IActionResult GetAllTutors()
+        {
+            try
+            {
+                return Ok(_userService.GetAllTutors());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in users", null);
+                throw;
+            }
         }
 
         [HttpPut]
         [Route("update")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesErrorResponseType(typeof(VSException))]
-        public IActionResult UpdateUser(AccountRequestViewModel Account)
+        public async Task<IActionResult> UpdateUser(AccountRequestViewModel Account)
         {
             try
             {
-                return Ok(_userService.UpdateUser(Account));
+                return Ok(await _userService.UpdateUser(Account).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
@@ -199,7 +246,7 @@ namespace VidyaSadhan_API.Controllers
         [HttpPost]
         public async Task<IActionResult> Refresh(RevokTokenViewModel token)
         {
-           // var refreshToken = Request.Cookies["refreshToken"];
+            // var refreshToken = Request.Cookies["refreshToken"];
             var response = await _userService.RefreshToken(token.Token, GetIPAddress());
 
             if (response == null)

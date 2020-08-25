@@ -14,7 +14,6 @@ namespace VidyaSadhan_API.Models
 
         public string CourseId { get; set; }
 
-        [JsonIgnore]
         public CourseViewModel Course { get; set; }
     }
 }
