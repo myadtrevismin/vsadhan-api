@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Security.Claims;
@@ -17,6 +18,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using VidyaSadhan_API.Entities;
@@ -236,7 +238,15 @@ namespace VidyaSadhan_API.Services
 
             //var newUrl = new Uri(QueryHelpers.AddQueryString(url, param));
 
-            var message = new EmailMessage(new string[] { user.Email }, "Confirmation email link", url);
+            string htmlmessage = "";
+            using (StreamReader reader = new StreamReader("register.html"))
+            {
+                htmlmessage = reader.ReadToEnd();       
+            }
+
+            htmlmessage = Regex.Replace(htmlmessage, "{Url}", url);
+
+            var message = new EmailMessage(new string[] { user.Email }, "Confirmation email link", htmlmessage);
             await _emailSender.SendEmailAsync(message);
         }
 

@@ -13,6 +13,8 @@ namespace VidyaSadhan_API.Models
 
         public string Message { get; set; }
 
+        public bool IsHtml { get; set; }
+
         public EmailMessage(string[] email, string subject, string message )
         {
             this.Email = email;

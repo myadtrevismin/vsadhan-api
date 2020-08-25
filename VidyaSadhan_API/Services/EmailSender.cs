@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -20,8 +21,8 @@ namespace VidyaSadhan_API.Services
         private readonly IWebHostEnvironment _environment;
         private readonly SMSoptions _smsOptions;
 
-        public EmailSender(IOptions<EmailSettings> emailSettings, 
-            IWebHostEnvironment environment, 
+        public EmailSender(IOptions<EmailSettings> emailSettings,
+            IWebHostEnvironment environment,
             IOptions<SMSoptions> smsOptions)
         {
             _environment = environment;
@@ -45,16 +46,17 @@ namespace VidyaSadhan_API.Services
                     Text = message.Message,
                 };
 
+
                 using (var client = new SmtpClient())
                 {
                     client.MessageSent += (sender, args) => { };
 
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                    
+
 
                     if (_environment.IsDevelopment())
                     {
-                        await client.ConnectAsync(_emailSettings.Server, _emailSettings.Port,true);
+                        await client.ConnectAsync(_emailSettings.Server, _emailSettings.Port, true);
                     }
                     else
                     {
@@ -86,7 +88,7 @@ namespace VidyaSadhan_API.Services
 
                 HttpResponseMessage response = await client.
                     GetAsync(string.Format("api.php?username={0}&password={1}&to={2}&from={3}&message={4}",
-                    _smsOptions.SMSAccountIdentification,_smsOptions.SMSAccountPassword, number, _smsOptions.Sender, message));
+                    _smsOptions.SMSAccountIdentification, _smsOptions.SMSAccountPassword, number, _smsOptions.Sender, message));
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadAsStringAsync();
