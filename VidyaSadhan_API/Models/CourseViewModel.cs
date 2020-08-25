@@ -25,6 +25,7 @@ namespace VidyaSadhan_API.Models
         public string Latitude { get; set; }
         public string LocationId { get; set; }
         public string LocationName { get; set; }
+        public bool IsDemo { get; set; }
 
         public CalendarEvent CalendarEvent { get; set; }
 

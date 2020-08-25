@@ -16,7 +16,7 @@ using VS_Models;
 
 namespace VidyaSadhan_API.Services
 {
-    public class DemoService
+    public class CourseServiceV
     {
         private VSDbContext _dbContext;
         private ICalendarService _calendarService;
@@ -24,7 +24,7 @@ namespace VidyaSadhan_API.Services
         private readonly UserService _userService;
         IMapper _map;
 
-        public DemoService(VSDbContext dbContext, ICalendarService calendarService,
+        public CourseServiceV(VSDbContext dbContext, ICalendarService calendarService,
             IOptionsMonitor<ConfigSettings> optionsMonitor, IMapper map, UserService userService)
         {
             _dbContext = dbContext;
@@ -34,12 +34,12 @@ namespace VidyaSadhan_API.Services
             _map = map;
         }
 
-        public async Task<IEnumerable<DemoViewModel>> GetAll()
+        public async Task<IEnumerable<CourseViewModel>> GetAll()
         {
             try
             {
-                var result = await _dbContext.Demos.Where(x=>x.IsDemo).ToListAsync().ConfigureAwait(false);
-                return _map.Map<IEnumerable<DemoViewModel>>(result).OrderByDescending(x=>x.StartDate);
+                var result = await _dbContext.Courses.Where(x=> !x.IsDemo).ToListAsync().ConfigureAwait(false);
+                return _map.Map<IEnumerable<CourseViewModel>>(result).OrderByDescending(x=>x.StartDate);
             }
             catch (Exception)
             {
@@ -47,14 +47,14 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        public async Task<DemoViewModel> GetDemoById(string demoId)
+        public async Task<CourseViewModel> GetCourseById(string courseId)
         {
             try
             {
-                var result = _map.Map<DemoViewModel>(await _dbContext.Demos.Include(x=> x.Enrollments).ThenInclude(y=> y.Student).FirstOrDefaultAsync(x => x.CourseId == demoId).ConfigureAwait(false));
+                var result = _map.Map<CourseViewModel>(await _dbContext.Courses.Include(x=> x.Enrollments).ThenInclude(y=> y.Student).FirstOrDefaultAsync(x => x.CourseId == courseId).ConfigureAwait(false));
                 if(result != null)
                 {
-                    GetGoogleCalendarEvent(new List<DemoViewModel> { result });
+                    GetGoogleCalendarEvent(new List<CourseViewModel> { result });
                 }
                 return result;
             }
@@ -64,24 +64,24 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        public async Task<IEnumerable<DemoViewModel>> GetDemoByUserId(string userId)
+        public async Task<IEnumerable<CourseViewModel>> GetCourseByUserId(string userId)
         {
             try
             {
-                IEnumerable<Demo> demos = null;
+                IEnumerable<Course> courses = null;
                 var user = _userService.GetUserById(userId);
                 if (user.Role == UserRoles.Student)
                 {
-                    demos = await _dbContext.Demos.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
-                        .Where(y => y.Enrollments.Any(z => z.StudentID == userId) && y.IsDemo).ToListAsync();
+                    courses = await _dbContext.Courses.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
+                        .Where(y => y.Enrollments.Any(z => z.StudentID == userId) && !y.IsDemo).ToListAsync();
                 }
                 else if (user.Role == UserRoles.Tutor)
                 {
-                    demos = await _dbContext.Demos.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
-                       .Where(y => y.CourseAssignments.Any(a => a.InstructorId == userId) && y.IsDemo).ToListAsync();
+                    courses = await _dbContext.Courses.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
+                       .Where(y => y.CourseAssignments.Any(a => a.InstructorId == userId) && !y.IsDemo).ToListAsync();
                 }
 
-                var resultView = _map.Map<IEnumerable<DemoViewModel>>(demos);
+                var resultView = _map.Map<IEnumerable<CourseViewModel>>(courses);
                 GetGoogleCalendarEvent(resultView);
                 return resultView.OrderByDescending(x=>x.StartDate);
             }
@@ -91,7 +91,7 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        private void GetGoogleCalendarEvent(IEnumerable<DemoViewModel> resultView)
+        private void GetGoogleCalendarEvent(IEnumerable<CourseViewModel> resultView)
         {
             var events = GetCalendarEvents(_configsetting.AdminEmail);
             foreach (var item in resultView)
@@ -120,25 +120,25 @@ namespace VidyaSadhan_API.Services
             return _calendarService.ListEvents(calendar);
         }
 
-        public async Task<int> SaveDemo(DemoViewModel demo)
+        public async Task<int> SaveCourse(CourseViewModel course)
         {
             try
             {
-                var calendar = _calendarService.Initialize(demo.CalendarEvent.UserEmail.IsNullOrWhiteSpace() ? _configsetting.AdminEmail : demo.CalendarEvent.UserEmail);
-                var cEvent = _calendarService.CreateEvent(calendar, demo.CalendarEvent);
-                demo.ExternalCourseId = cEvent.Id;
-                demo.IsDemo = true;
-                demo.CourseId = Guid.NewGuid().ToString();
-                foreach (var item in demo.CourseAssignments)
+                var calendar = _calendarService.Initialize(course.CalendarEvent.UserEmail.IsNullOrWhiteSpace() ? _configsetting.AdminEmail : course.CalendarEvent.UserEmail);
+                var cEvent = _calendarService.CreateEvent(calendar, course.CalendarEvent);
+                course.ExternalCourseId = cEvent.Id;
+                course.IsDemo = true;
+                course.CourseId = Guid.NewGuid().ToString();
+                foreach (var item in course.CourseAssignments)
                 {
-                    item.CourseId = demo.CourseId;
+                    item.CourseId = course.CourseId;
                 }
 
-                foreach (var item in demo.Enrollments)
+                foreach (var item in course.Enrollments)
                 {
-                    item.CourseId = demo.CourseId;
+                    item.CourseId = course.CourseId;
                 }
-                _dbContext.Demos.Add(_map.Map<Demo>(demo));
+                _dbContext.Courses.Add(_map.Map<Course>(course));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception)
@@ -149,11 +149,11 @@ namespace VidyaSadhan_API.Services
 
 
 
-        public async Task<int> UpdateDemo(DemoViewModel demo)
+        public async Task<int> UpdateDemo(CourseViewModel course)
         {
             try
             {
-                _dbContext.Demos.Update(_map.Map<Demo>(demo));
+                _dbContext.Courses.Update(_map.Map<Course>(course));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception)
@@ -162,11 +162,11 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        public async Task<int> DeleteDemo(DemoViewModel demo)
+        public async Task<int> DeleteDemo(CourseViewModel demo)
         {
             try
             {
-                _dbContext.Demos.Remove(_map.Map<Demo>(demo));
+                _dbContext.Courses.Remove(_map.Map<Course>(demo));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception)
