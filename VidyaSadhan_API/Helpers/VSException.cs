@@ -24,5 +24,7 @@ namespace VidyaSadhan_API.Helpers
 
         public object Value { get; set; }
 
+        public object StackTrace { get; set; }
+
     }
 }

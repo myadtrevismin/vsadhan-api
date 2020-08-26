@@ -110,7 +110,10 @@ namespace VidyaSadhan_API.Services
             }
             catch (Exception ex)
             {
-                throw new VSException("Unable to Register With Following Errors:", results?.Errors);
+                var exception =new VSException("Unable to Register With Following Errors:", results?.Errors);
+                exception.Value = ex.Message;
+                exception.StackTrace = ex.StackTrace;
+                throw exception;
             }
         }
 
