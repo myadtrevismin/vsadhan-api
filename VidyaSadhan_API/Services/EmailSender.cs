@@ -46,11 +46,6 @@ namespace VidyaSadhan_API.Services
                     Text = message.Message,
                 };
 
-                mimeMessage.Body = new TextPart("plain")
-                {
-                    Text = message.Subject,
-                };
-
                 using (var client = new SmtpClient())
                 {
                     client.MessageSent += (sender, args) => { };
