@@ -72,13 +72,13 @@ namespace VidyaSadhan_API.Services
                 var user = _userService.GetUserById(userId);
                 if (user.Role == UserRoles.Student)
                 {
-                    demos = await _dbContext.Demos.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
-                        .Where(y => y.Enrollments.Any(z => z.StudentID == userId) && y.IsDemo).ToListAsync();
+                    demos = await _dbContext.Demos.Include(x => x.Enrollments).ThenInclude(a => a.Student).Include(x => x.CourseAssignments)
+                        .Where(y => y.Enrollments.Any(z => z.StudentID == userId)  && !y.ValidEndDate.HasValue).ToListAsync();
                 }
                 else if (user.Role == UserRoles.Tutor)
                 {
-                    demos = await _dbContext.Demos.Include(x => x.Enrollments).Include(x => x.CourseAssignments)
-                       .Where(y => y.CourseAssignments.Any(a => a.InstructorId == userId) && y.IsDemo).ToListAsync();
+                    demos = await _dbContext.Demos.Include(x => x.Enrollments).ThenInclude(a => a.Student).Include(x => x.CourseAssignments)
+                       .Where(y => y.CourseAssignments.Any(a => a.InstructorId == userId) && !y.ValidEndDate.HasValue).ToListAsync();
                 }
 
                 var resultView = _map.Map<IEnumerable<DemoViewModel>>(demos);
@@ -127,7 +127,6 @@ namespace VidyaSadhan_API.Services
                 var calendar = _calendarService.Initialize(demo.CalendarEvent.UserEmail.IsNullOrWhiteSpace() ? _configsetting.AdminEmail : demo.CalendarEvent.UserEmail);
                 var cEvent = _calendarService.CreateEvent(calendar, demo.CalendarEvent);
                 demo.ExternalCourseId = cEvent.Id;
-                demo.IsDemo = true;
                 demo.CourseId = Guid.NewGuid().ToString();
                 foreach (var item in demo.CourseAssignments)
                 {
@@ -138,6 +137,7 @@ namespace VidyaSadhan_API.Services
                 {
                     item.CourseId = demo.CourseId;
                 }
+
                 _dbContext.Demos.Add(_map.Map<Demo>(demo));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
@@ -197,16 +197,19 @@ namespace VidyaSadhan_API.Services
                 List<RequestViewModel> requests = new List<RequestViewModel>();
                 if (!string.IsNullOrWhiteSpace(request.TutorId))
                 {
-                    requests = _map.Map<List<RequestViewModel>>(await _dbContext.Requests.Include(x=> x.Tutor).Include(x=>x.Student)
+                    requests = _map.Map<List<RequestViewModel>>(await _dbContext.Requests.Include(x=>x.Student)
                         .Where(x => x.TutorId == request.TutorId).ToListAsync());
                    
                 }
                 if (!string.IsNullOrWhiteSpace(request.StudentId))
                 {
-                    requests = _map.Map<List<RequestViewModel>>(await _dbContext.Requests.Include(x => x.Tutor).Include(x => x.Student)
+                    requests = _map.Map<List<RequestViewModel>>(await _dbContext.Requests.Include(x => x.Tutor)
                         .Where(x => x.StudentId == request.StudentId).ToListAsync());
                 }
-                requests.ForEach(x => { x.Status = _dbContext.Enrollments?.Any(y => y.CourseId == x.Slot && y.StudentID == x.StudentId) == false ? Status.Request : _dbContext.Enrollments.FirstOrDefault(y => y.CourseId == x.Slot && y.StudentID == x.StudentId).Status; });
+                requests.ForEach(x => { 
+                    x.Status = _dbContext.Enrollments?.Any(y => y.CourseId == x.Slot && y.StudentID == x.StudentId) == false ? Status.Request : _dbContext.Enrollments.FirstOrDefault(y => y.CourseId == x.Slot && y.StudentID == x.StudentId).Status;
+                    x.Course = _map.Map<DemoViewModel>(_dbContext.Demos.FirstOrDefault(y => y.CourseId == x.Slot));
+                });
 
                 return requests;
             }

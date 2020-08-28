@@ -21,6 +21,8 @@ namespace VidyaSadhan_API.Models
 
         public string Slot { get; set; }
 
+        public DemoViewModel Course { get; set; }
+
         public string Subject { get; set; }
 
         public string Message { get; set; }

@@ -468,14 +468,15 @@ namespace VidyaSadhan_API.Services
             try
             {
                 _logger.LogInformation("User Info", _identityContext);
-                var results = _map.Map<IEnumerable<AccountViewModel>>(_identityContext.Users.Include(x=> x.CourseAssignments).Where(x=>x.Role == UserRoles.Tutor));
-                foreach(var tutor in results)
-                {
-                    foreach (var assignment in tutor.CourseAssignments)
-                    {
-                        assignment.Course = _map.Map<CourseViewModel>(_identityContext.Courses.FirstOrDefault(x => x.CourseId == assignment.CourseId));
-                    }                  
-                }
+                var results = _map.Map<IEnumerable<AccountViewModel>>(_identityContext.Users.Include(x=> x.CourseAssignments)
+                    .ThenInclude(a=> a.Course).Where(x=>x.Role == UserRoles.Tutor));
+                //foreach(var tutor in results)
+                //{
+                //    foreach (var assignment in tutor.CourseAssignments)
+                //    {
+                //        assignment.Course = _map.Map<CourseViewModel>(_identityContext.Courses.FirstOrDefault(x => x.CourseId == assignment.CourseId));
+                //    }                  
+                //}
                 return results;
             }
             catch (Exception ex)
@@ -690,6 +691,12 @@ namespace VidyaSadhan_API.Services
             return principal;
         }
 
+        public async Task<bool> RegenerateToken(string emailId)
+        {
+            var user = await _userManager.FindByEmailAsync(emailId);
+            await GenerateOTP(user);
+            return true;
+        }
         public async Task<string> GenerateOTP(Account user)
         {
             try
@@ -705,7 +712,9 @@ namespace VidyaSadhan_API.Services
             }
             catch (Exception ex)
             {
-                throw;
+                var exception = new VSException("System Error Occured", ex);
+                exception.Value = ex.Message;
+                throw exception;
             }
 
         }

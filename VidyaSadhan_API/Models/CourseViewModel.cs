@@ -19,6 +19,11 @@ namespace VidyaSadhan_API.Models
         public int? DepartmentID { get; set; }
         public string AdminId { get; set; }
 
+        public string Subject { get; set; }
+
+        public string Grade { get; set; }
+        public DateTime? ValidEndDate { get; set; }
+
         public string ExternalCourseId { get; set; }
 
         public string Langitude { get; set; }
@@ -36,6 +41,9 @@ namespace VidyaSadhan_API.Models
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+
         public virtual ICollection<CourseSubjectViewModel> CourseSubjects { get; set; }
 
     }

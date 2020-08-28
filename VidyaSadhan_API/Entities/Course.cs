@@ -21,11 +21,22 @@ namespace VidyaSadhan_API.Entities
         [StringLength(150, MinimumLength = 3)]
         public string Title { get; set; }
 
+        [StringLength(150, MinimumLength = 3)]
+        public string Subject { get; set; }
+
+        [StringLength(150, MinimumLength = 3)]
+        public string Grade { get; set; }
+        public DateTime? ValidEndDate { get; set; }
+
         public string CourseDescription { get; set; }
 
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
+
+        public string StartTime { get; set; }
+
+        public string EndTime { get; set; }
 
         [Range(0, 5)]
         public int Credits { get; set; }

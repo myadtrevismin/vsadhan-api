@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -56,7 +57,7 @@ namespace VidyaSadhan_API.Entities
         //public ICollection<Request> Requests { get; set; }
 
 
-        [JsonIgnore]
+        [BindingBehavior(BindingBehavior.Never)]
         public List<RefreshTokenSet> RefreshTokens { get; set; }
 
     }

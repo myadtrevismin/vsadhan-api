@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -26,7 +27,7 @@ namespace VidyaSadhan_API.Models
         [JsonIgnore]
         public string Password { get; set; }
 
-        [JsonIgnore]
+        [BindNever]
         public List<RefreshTokenViewModel> RefreshTokens { get; set; }
 
         public List<AddressViewModel> Addresses { get; set; }
