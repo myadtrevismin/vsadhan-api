@@ -707,6 +707,7 @@ namespace VidyaSadhan_API.Services
                     throw new Exception();
                 }
                 var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email").ConfigureAwait(false);
+                token = "Your token code to login is:" + token;
                 await _emailSender.SendSmsAsync(user.PhoneNumber, token).ConfigureAwait(false);
                 return token;
             }
