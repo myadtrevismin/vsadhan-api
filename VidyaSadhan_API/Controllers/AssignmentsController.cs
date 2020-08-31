@@ -136,5 +136,20 @@ namespace VidyaSadhan_API.Controllers
                 throw;
             }
         }
+
+        [Route("student/update")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateStudentAssignment([FromBody] StudentAssignmentViewModel assignment)
+        {
+            try
+            {
+                return Ok(await _assignmentService.UpdateStudentAssignment(assignment).ConfigureAwait(false));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+        }
     }
 }

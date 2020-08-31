@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VidyaSadhan_API.Extensions;
 
 namespace VidyaSadhan_API.Models
 {
@@ -14,5 +15,8 @@ namespace VidyaSadhan_API.Models
         public string UserId { get; set; }
 
         public AccountViewModel Account { get; set; }
+        public DateTime? SubmissionDate { get; set; }
+        public AssignmentStatus Status { get; set; }
+        public string SubmissionFile { get; set; }
     }
 }

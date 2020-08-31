@@ -12,4 +12,11 @@ namespace VidyaSadhan_API.Extensions
         Reject,
         ReSchedule
     }
+
+    public enum AssignmentStatus
+    {
+        Pending,
+        Submitted,
+        Evaluated
+    }
 }

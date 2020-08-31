@@ -99,7 +99,6 @@ namespace VidyaSadhan_API.Services
             {
                 throw;
             }
-
         }
 
         public async Task<int> AddUserToAssignment(StudentAssignmentViewModel Assignment)
@@ -107,6 +106,19 @@ namespace VidyaSadhan_API.Services
             try
             {
                 _dbContext.StudentAssignments.Add(_map.Map<StudentAssignment>(Assignment));
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> UpdateStudentAssignment(StudentAssignmentViewModel Assignment)
+        {
+            try
+            {
+                _dbContext.StudentAssignments.Update(_map.Map<StudentAssignment>(Assignment));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception)
