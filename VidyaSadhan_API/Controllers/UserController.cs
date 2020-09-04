@@ -101,6 +101,21 @@ namespace VidyaSadhan_API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpPost]
+        [Route("password/reset")]
+        [ProducesResponseType(typeof(IEnumerable<bool>), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var exception = new VSException();
+                exception.Value = "Invalid Model Values"; 
+            }
+            return Ok(await _userService.ResetPassword(model).ConfigureAwait(false));
+        }
+
+        [AllowAnonymous]
         [HttpGet]
         [Route("confirm")]
         [ProducesResponseType(typeof(bool), 200)]

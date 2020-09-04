@@ -253,6 +253,55 @@ namespace VidyaSadhan_API.Services
             await _emailSender.SendEmailAsync(message);
         }
 
+        public async Task<string> ForgotPasswordToken(ResetPasswordModel reset)
+        {
+            var user = await _userManager.FindByEmailAsync(reset.Email);
+            if (user == null)
+            {
+                VSException vSException = new VSException();
+                vSException.Value = reset.Email + "is not registered";
+                throw vSException;
+            }
+                 
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        public async Task<bool> ResetPassword(ResetPasswordModel reset)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(reset.Email);
+                if (user == null)
+                {
+                    var exception = new VSException();
+                    exception.Value = "Your Email is not registered";
+                    throw exception;
+                }
+
+                reset.Token = await ForgotPasswordToken(reset);
+                var resetpass = await _userManager.ResetPasswordAsync(user, reset.Token, reset.Password);
+                if (!resetpass.Succeeded)
+                {
+                    foreach (var error in resetpass.Errors)
+                    {
+                        var exception = new VSException();
+                        exception.Value = error.Description;
+                        throw exception;
+                    }
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var exception = new VSException();
+                exception.Value = ex.Message;
+                exception.StackTrace = ex.StackTrace;
+                throw exception;
+            }
+
+        }
+
         private string RandomTokenGen()
         {
             using var rngCryptoServiceProvider = new RNGCryptoServiceProvider();

@@ -96,7 +96,7 @@ namespace VidyaSadhan_API.Services
             var events = GetCalendarEvents(_configsetting.AdminEmail);
             foreach (var item in resultView)
             {
-                Event cEvent = events.Items.FirstOrDefault(x => x.ETag == item.ExternalCourseId);
+                Event cEvent = events.Items.FirstOrDefault(x => x.ICalUID == item.ExternalCourseId);
                 if (cEvent != null)
                 {
                     item.CalendarEvent = new CalendarEvent
@@ -126,7 +126,7 @@ namespace VidyaSadhan_API.Services
             {
                 var calendar = _calendarService.Initialize(demo.CalendarEvent.UserEmail.IsNullOrWhiteSpace() ? _configsetting.AdminEmail : demo.CalendarEvent.UserEmail);
                 var cEvent = _calendarService.CreateEvent(calendar, demo.CalendarEvent);
-                demo.ExternalCourseId = cEvent.ETag;
+                demo.ExternalCourseId = cEvent.ICalUID;
                 demo.CourseId = Guid.NewGuid().ToString();
                 foreach (var item in demo.CourseAssignments)
                 {
