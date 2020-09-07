@@ -35,6 +35,7 @@ namespace VidyaSadhan_API.Helpers.Mappers
             CreateMap<RequestViewModel, Request>().ReverseMap();
             CreateMap<AssignmentsViewModel, Entities.Assignment>().ReverseMap();
             CreateMap<StudentAssignmentViewModel, StudentAssignment>().ReverseMap();
+            CreateMap<NotificationModel, Notification>().ReverseMap();
 
             //CreateMap<UpdateModel, User>();
         }

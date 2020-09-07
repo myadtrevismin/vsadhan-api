@@ -179,7 +179,17 @@ namespace VidyaSadhan_API.Services
         {
             try
             {
+                var tutor = _userService.GetUserById(request.TutorId);
+                var student = _userService.GetUserById(request.StudentId);
                 _dbContext.Requests.Add(_map.Map<Request>(request));
+                _dbContext.Notifications.Add(new Notification
+                {
+                    Title = "Demo/Course",
+                    Message = "New Request from" + student.FirstName + " " + student.LastName,
+                    UserId = tutor.Id,
+                    OriginId = student.Id,
+                    Date = DateTime.Now,
+                });
                 return await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
