@@ -13,10 +13,16 @@ namespace VidyaSadhan_API.Entities
 
         public Assignment Assignment { get; set; }
 
+        public DateTime CreationDate { get; set; }
+
         [ForeignKey("Account")]
         public string UserId { get; set; }
 
         public Account Account { get; set; }
+
+        public string CourseId { get; set; }
+
+        public Course Course { get; set; }
 
         public DateTime? SubmissionDate { get; set; }
         public AssignmentStatus Status { get; set; }

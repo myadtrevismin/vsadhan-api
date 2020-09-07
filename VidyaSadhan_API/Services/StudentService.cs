@@ -65,11 +65,27 @@ namespace VidyaSadhan_API.Services
             var enrollmentselected = _dbContext.Enrollments.FirstOrDefault(x => x.CourseId == enrollment.CourseId && x.StudentID == enrollment.StudentID);
             if(enrollmentselected == null)
             {
-                _dbContext.Enrollments.Add(_map.Map<Enrollment>(enrollment));                             
+                _dbContext.Enrollments.Add(_map.Map<Enrollment>(enrollment));
+                _dbContext.Notifications.Add(new Notification
+                {
+                    Title = "Demo/Course",
+                    Message = "Enrolled into" + enrollment.Course.Title + " " + (enrollment.Course.IsDemo ? "Demo" : "Course"),
+                    UserId = enrollment.StudentID,
+                    OriginId = enrollment.Course.CourseAssignments.FirstOrDefault()?.InstructorId,
+                    Date = DateTime.Now,
+                });
             }
             else
             {
                 enrollmentselected.Status = enrollment.Status;
+                _dbContext.Notifications.Add(new Notification
+                {
+                    Title = "Demo/Course",
+                    Message = "Enrollment into" + enrollment.Course.Title + " " + (enrollment.Course.IsDemo ? "Demo" : "Course") + "has been changed",
+                    UserId = enrollment.StudentID,
+                    OriginId = enrollment.Course.CourseAssignments.FirstOrDefault()?.InstructorId,
+                    Date = DateTime.Now,
+                });
             }
 
             return await _dbContext.SaveChangesAsync().ConfigureAwait(false);

@@ -18,9 +18,11 @@ namespace VidyaSadhan_API.Controllers
     {
         public static List<PushSubscription> Subscriptions { get; set; } = new List<PushSubscription>();
         private readonly IEmailSender _emailSender;
-        public NotificationsController(IEmailSender emailSender)
+        private readonly StaticService _staticService;
+        public NotificationsController(IEmailSender emailSender, StaticService staticService)
         {
             _emailSender = emailSender;
+            _staticService = staticService;
         }
 
         [HttpPost("subscribe")]
@@ -84,6 +86,13 @@ namespace VidyaSadhan_API.Controllers
                 return BadRequest(ex);
             }
 
+        }
+
+        [HttpGet("load")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public IActionResult GetNotifications(string userId)
+        {
+            return Ok(_staticService.Notifications(userId));
         }
     }
 }

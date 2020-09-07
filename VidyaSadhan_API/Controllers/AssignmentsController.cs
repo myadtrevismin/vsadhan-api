@@ -124,11 +124,11 @@ namespace VidyaSadhan_API.Controllers
 
         [Route("addusers")]
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] StudentAssignmentViewModel assignment)
+        public async Task<IActionResult> Post([FromBody] IEnumerable<StudentAssignmentViewModel> assignments)
         {
             try
             {
-                return Ok(await _assignmentService.AddUserToAssignment(assignment).ConfigureAwait(false));
+                return Ok(await _assignmentService.AddUserToAssignment(assignments).ConfigureAwait(false));
             }
             catch (Exception ex)
             {

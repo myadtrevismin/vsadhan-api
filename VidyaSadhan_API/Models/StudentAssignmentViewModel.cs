@@ -15,8 +15,15 @@ namespace VidyaSadhan_API.Models
         public string UserId { get; set; }
 
         public AccountViewModel Account { get; set; }
+
+        public string CourseId { get; set; }
+
+        public CourseViewModel Course { get; set; }
+
         public DateTime? SubmissionDate { get; set; }
+
         public AssignmentStatus Status { get; set; }
+
         public string SubmissionFile { get; set; }
     }
 }

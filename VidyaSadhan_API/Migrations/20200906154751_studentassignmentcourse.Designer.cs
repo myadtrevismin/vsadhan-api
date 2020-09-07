@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VidyaSadhan_API.Extensions;
 
 namespace VidyaSadhan_API.Migrations
 {
     [DbContext(typeof(VSDbContext))]
-    partial class VSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200906154751_studentassignmentcourse")]
+    partial class studentassignmentcourse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -717,39 +719,6 @@ namespace VidyaSadhan_API.Migrations
                     b.ToTable("Mediums");
                 });
 
-            modelBuilder.Entity("VidyaSadhan_API.Entities.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OriginId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Notifications");
-                });
-
             modelBuilder.Entity("VidyaSadhan_API.Entities.Question", b =>
                 {
                     b.Property<int>("QuestionId")
@@ -899,11 +868,6 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("CreationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
-
                     b.Property<string>("CourseId")
                         .HasColumnType("nvarchar(450)");
 
@@ -916,7 +880,7 @@ namespace VidyaSadhan_API.Migrations
                     b.Property<string>("SubmissionFile")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AssignmentId", "UserId", "CreationDate");
+                    b.HasKey("AssignmentId", "UserId");
 
                     b.HasIndex("CourseId");
 
