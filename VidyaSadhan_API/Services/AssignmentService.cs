@@ -66,7 +66,7 @@ namespace VidyaSadhan_API.Services
         {
             try
             {
-                var result = await _dbContext.StudentAssignments.Include(a => a.Assignment).Include(b=>b.Account).Where(x => x.UserId == UserId).ToListAsync().ConfigureAwait(false);
+                var result = await _dbContext.StudentAssignments.Include(a => a.Assignment).ThenInclude(y=> y.Account).Include(b=>b.Account).Where(x => x.UserId == UserId).ToListAsync().ConfigureAwait(false);
                 return _map.Map<IEnumerable<StudentAssignmentViewModel>>(result);
             }
             catch (Exception)
@@ -101,14 +101,14 @@ namespace VidyaSadhan_API.Services
             }
         }
 
-        public async Task<int> AddUserToAssignment(StudentAssignmentViewModel Assignment)
+        public async Task<int> AddUserToAssignment(IEnumerable<StudentAssignmentViewModel> Assignment)
         {
             try
             {
-                _dbContext.StudentAssignments.Add(_map.Map<StudentAssignment>(Assignment));
+                _dbContext.StudentAssignments.AddRange(_map.Map<IEnumerable<StudentAssignment>>(Assignment));
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

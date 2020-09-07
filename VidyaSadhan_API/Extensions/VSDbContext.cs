@@ -70,7 +70,9 @@ namespace VidyaSadhan_API.Extensions
             modelBuilder.Entity<CourseSubject>()
                .HasKey(c => new { c.CourseId, c.SubjectId });
             modelBuilder.Entity<StudentAssignment>()
-                .HasKey(c => new { c.AssignmentId, c.UserId });
+                .HasKey(c => new { c.AssignmentId, c.UserId, c.CreationDate });
+            modelBuilder.Entity<StudentAssignment>().Property(b => b.CreationDate)
+                .HasDefaultValueSql("getdate()");
             //modelBuilder.Entity<Request>().HasOne(x => x.Tutor).WithMany(y => y.Requests).HasForeignKey(z => z.TutorId).HasForeignKey(a=> a.StudentId);
             //modelBuilder.Entity<Request>().HasOne(x => x.Tutor).WithMany(y => y.Requests).HasForeignKey(z => z.TutorId).HasForeignKey(a => a.StudentId);
         }
