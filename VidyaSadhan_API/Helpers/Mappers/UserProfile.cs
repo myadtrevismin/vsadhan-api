@@ -11,7 +11,7 @@ using VS_Models;
 
 namespace VidyaSadhan_API.Helpers.Mappers
 {
-    public class UserProfile: Profile
+    public class UserProfile : Profile
     {
         public UserProfile()
         {
@@ -19,23 +19,27 @@ namespace VidyaSadhan_API.Helpers.Mappers
             CreateMap<AccountViewModel, Account>().ReverseMap();
             CreateMap<SubjectViewModel, Subject>().ReverseMap();
             CreateMap<QuestionViewModel, Question>().ReverseMap();
+            CreateMap<EnrolementViewModel, Enrollment>().ReverseMap();
+            CreateMap<DepartmentViewModel, Department>().ReverseMap();
             CreateMap<DemoViewModel, Demo>().ReverseMap();
             CreateMap<VCourse, Google.Apis.Classroom.v1.Data.Course>().ReverseMap();
             CreateMap<VTeacher, Teacher>().ReverseMap();
             CreateMap<Instructor, InstructorViewModel>().ReverseMap();
             CreateMap<Entities.Student, StudentViewModel>().ReverseMap();
-            CreateMap<AddressViewModel,Address>().ReverseMap();
+            CreateMap<AddressViewModel, Address>().ReverseMap();
             CreateMap<RefreshTokenSet, RefreshTokenViewModel>().ReverseMap();
             CreateMap<EnrolementViewModel, Enrollment>().ReverseMap();
             CreateMap<CourseAssignment, CourseAssignmentViewModel>().ReverseMap();
             CreateMap<CourseViewModel, Entities.Course>().ReverseMap();
             CreateMap<AcademicTypeViewModel, AcademicType>().ReverseMap();
+
             CreateMap<AttendanceViewModel, Attendance>().ReverseMap();
 
             CreateMap<RequestViewModel, Request>().ReverseMap();
             CreateMap<AssignmentsViewModel, Entities.Assignment>().ReverseMap();
             CreateMap<StudentAssignmentViewModel, StudentAssignment>().ReverseMap();
             CreateMap<NotificationModel, Notification>().ReverseMap();
+
 
             //CreateMap<UpdateModel, User>();
         }
