@@ -31,6 +31,7 @@ namespace VidyaSadhan_API.Models
         public string LocationId { get; set; }
         public string LocationName { get; set; }
         public bool IsDemo { get; set; }
+        public bool IsOnline { get; set; }
 
         public CalendarEvent CalendarEvent { get; set; }
 

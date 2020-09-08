@@ -12,7 +12,7 @@ namespace VS_Models
         public string TimeZone { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        public IEnumerable<Recurrence> Recurrence { get; set; }
+        public List<string> Recurrence { get; set; }
         public IEnumerable<string> Attendees { get; set; }
         public string Organizer { get; set; }
         public string UserEmail { get; set; }

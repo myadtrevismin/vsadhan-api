@@ -48,6 +48,7 @@ namespace VidyaSadhan_API.Entities
         public string LocationId { get; set; }
         public string LocationName { get; set; }
         public bool IsDemo { get; set; }
+        public bool IsOnline { get; set; }
 
         public int? DepartmentID { get; set; }
 
