@@ -27,9 +27,20 @@ namespace VidyaSadhan_API.Services
             return _dbContext.Countries.ToList();
         }
 
+
+
         public IEnumerable<State> GetStates()
         {
             return _dbContext.States.ToList();
+        }
+        public StaticDataForSubjectsViewModel GetStaticDataForSubjects()
+        {
+            var result = new StaticDataForSubjectsViewModel();
+            result.Groups = _dbContext.Groups.ToList();
+            result.Mediums = _dbContext.Mediums.ToList();
+            result.States = _dbContext.States.ToList();
+            result.Subjects = _dbContext.Subjects.ToList();
+            return result;
         }
 
         public IEnumerable<NotificationModel> Notifications(string userId)
