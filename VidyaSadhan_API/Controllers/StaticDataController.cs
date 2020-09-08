@@ -84,5 +84,22 @@ namespace VidyaSadhan_API.Controllers
 
         }
 
+        [HttpGet]
+        [Route("StaticDataForSubjects")]
+        [ProducesResponseType(typeof(StaticDataForSubjectsViewModel), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public IActionResult GetStaticDataForSubjects()
+        {
+            try
+            {
+                var result = _staticData.GetStaticDataForSubjects();
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, e.StackTrace, null);
+                throw new VSException(e.StackTrace, e);
+            }
+        }
     }
 }
