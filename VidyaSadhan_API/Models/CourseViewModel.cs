@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VidyaSadhan_API.Extensions;
 using VS_Models;
 
 namespace VidyaSadhan_API.Models
@@ -44,6 +45,15 @@ namespace VidyaSadhan_API.Models
         public DateTime EndDate { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+
+        public Status Status
+        {
+            get
+            {
+                return this.Enrollments?.Any(x => x.Status == Status.Approve) == true ? Status.Approve :
+                    this.Enrollments?.Any(x => x.Status == Status.ReSchedule) == true ? Status.ReSchedule : Status.Request;
+            }
+        }
 
         public virtual ICollection<CourseSubjectViewModel> CourseSubjects { get; set; }
 
