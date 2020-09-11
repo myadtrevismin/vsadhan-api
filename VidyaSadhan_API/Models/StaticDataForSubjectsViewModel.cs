@@ -15,5 +15,9 @@ namespace VidyaSadhan_API.Models
         public IEnumerable<Group> Groups { get; set; }
 
         public IEnumerable<Medium> Mediums { get; set; }
+
+        public IEnumerable<Country> Countries { get; set; }
+
+        public IEnumerable<Board> Boards { get; set; }
     }
 }
