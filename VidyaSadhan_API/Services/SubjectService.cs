@@ -34,6 +34,19 @@ namespace VidyaSadhan_API.Services
             }
         }
 
+        public async Task<IEnumerable<MaterialViewModel>> GetMaterials()
+        {
+            try
+            {
+                var result = await _dbContext.Materials.Include(x=> x.Files).ToListAsync().ConfigureAwait(false);
+                return _map.Map<IEnumerable<MaterialViewModel>>(result);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<int> SaveSubject(SubjectViewModel subject)
         {
             try

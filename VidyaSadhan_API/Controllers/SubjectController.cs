@@ -42,6 +42,23 @@ namespace VidyaSadhan_API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("materials")]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public async Task<IActionResult> GetMaterials (int id)
+        {
+            try
+            {
+                return Ok(await _subjectService.GetMaterials().ConfigureAwait(false));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in get Subject", null);
+                throw;
+            }
+        }
+
         [HttpPost]
         /// <summary>
         /// 

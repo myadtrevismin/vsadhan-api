@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VidyaSadhan_API.Entities;
 using VidyaSadhan_API.Extensions;
+using VidyaSadhan_API.Helpers;
 using VidyaSadhan_API.Models;
 
 namespace VidyaSadhan_API.Services
@@ -23,8 +24,27 @@ namespace VidyaSadhan_API.Services
 
         public async Task<IEnumerable<InstructorViewModel>> GetAllInstructors()
         {
-            var instructors = await _dbContext.Instructors.Include(x=> x.Account).ToListAsync();
-            return _map.Map<IEnumerable<InstructorViewModel>>(instructors);
+            try
+            {
+                var instructors = await _dbContext.Instructors.Include(x => x.Account).ThenInclude(A=> A.CourseAssignments).ThenInclude(b=> b.Course).ToListAsync();
+                var instructorsView = _map.Map<IEnumerable<InstructorViewModel>>(instructors);
+                if (instructorsView.Any())
+                {
+                    foreach (var item in instructorsView)
+                    {
+                        item.Name = string.Join(' ', item.Account.FirstName, item.Account.LastName);
+                        item.Location = _map.Map<AddressViewModel>(_dbContext.AccountAddress?.FirstOrDefault(x => x.UserId == item.Account.Id));
+                    }
+                }
+                return instructorsView;
+            }
+            catch (Exception ex)
+            {
+                var exception = new VSException();
+                exception.Value = ex.Message;
+                exception.StackTrace = ex.StackTrace;
+                throw exception;
+            }     
         }
 
         public async Task<InstructorViewModel> GetInstructorById(string UserId)

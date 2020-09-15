@@ -43,7 +43,12 @@ namespace VidyaSadhan_API.Models
 
         public string Intersets { get; set; }
 
+        public string Name { get; set; }
+
+        public AddressViewModel? Location { get; set; }
+
         public string Medium { get; set; }
+        public IEnumerable<CourseAssignmentViewModel> CourseAssignments { get; set; }
         public AccountViewModel Account { get; set; }
         public ICollection<QuestionnaireViewModel> Questionnaires { get; set; }
     }

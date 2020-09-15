@@ -102,6 +102,8 @@ namespace VidyaSadhan_API.Extensions
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<StudentAssignment> StudentAssignments { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Material> Materials { get; set; }
+        public DbSet<Material> MaterialFiles { get; set; }
 
     }
 }

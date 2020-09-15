@@ -101,5 +101,23 @@ namespace VidyaSadhan_API.Controllers
                 throw new VSException(e.StackTrace, e);
             }
         }
+
+        [HttpGet]
+        [Route("statistics")]
+        [ProducesResponseType(typeof(Statistics), 200)]
+        [ProducesErrorResponseType(typeof(VSException))]
+        public IActionResult GetStatistics(string userId)
+        {
+            try
+            {
+                var result = _staticData.GetStatistics(userId);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, e.StackTrace, null);
+                throw new VSException(e.StackTrace, e);
+            }
+        }
     }
 }

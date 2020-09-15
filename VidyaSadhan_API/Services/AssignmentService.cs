@@ -66,7 +66,7 @@ namespace VidyaSadhan_API.Services
         {
             try
             {
-                var result = await _dbContext.StudentAssignments.Include(a => a.Assignment).ThenInclude(y=> y.Account).Include(b=>b.Account).Where(x => x.UserId == UserId).ToListAsync().ConfigureAwait(false);
+                var result = await _dbContext.StudentAssignments.Include(a => a.Assignment).ThenInclude(x => x.Account).Where(x => x.UserId == UserId).ToListAsync().ConfigureAwait(false);
                 return _map.Map<IEnumerable<StudentAssignmentViewModel>>(result);
             }
             catch (Exception)
