@@ -194,6 +194,7 @@ namespace VidyaSadhan_API.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("students")]
         [ProducesResponseType(typeof(IEnumerable<AccountViewModel>), 200)]

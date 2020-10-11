@@ -129,7 +129,7 @@ namespace VidyaSadhan_API
                     IssuerSigningKey = new SymmetricSecurityKey(securityKey),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.FromMinutes(60)
                 };
             });
             //.AddJwtBearer(x =>

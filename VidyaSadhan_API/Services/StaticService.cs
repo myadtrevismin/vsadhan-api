@@ -37,7 +37,7 @@ namespace VidyaSadhan_API.Services
         public StaticDataForSubjectsViewModel GetStaticDataForSubjects()
         {
             var result = new StaticDataForSubjectsViewModel();
-            result.Groups = _dbContext.Groups.OrderBy(x => x.GroupName).ToList();
+            result.Groups = _dbContext.Groups.ToList();
             result.Mediums = _dbContext.Mediums.OrderBy(x => x.MediumName).ToList();
             result.States = _dbContext.States.OrderBy(x => x.StateName).ToList();
             result.Subjects = _dbContext.Subjects.OrderBy(x => x.Name).ToList();
